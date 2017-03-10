@@ -1,5 +1,19 @@
 #include <stdio.h>
 
+/*
+ * Pseudo code to Horizontal sweep algorithm
+ *
+ * -Order the outer points by the biggest Y
+ * -Iterate for all ordered points with different Y
+ *    -Trace horizontal line at that Y
+ *    -Determine all line segments that are inside the polygon
+ *    by checking intersection between the line and all vertical edges
+ *    -Iterate for all line segments inside the polygon
+ *        -Determine the intersection points of the line segment
+ *        with vertical edges of holes
+ *        -Update Partition structure
+ */
+
 int main(int argc, char *argv[]){
     input();
 }
