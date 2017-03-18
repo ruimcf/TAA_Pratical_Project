@@ -1,50 +1,39 @@
 #include <dcel.h>
 
-Dcel createCode(int x, int y){
-	Dcel node;
-	node.x=x;
-	node.y=y;
-	node.up=NULL;
-	node.right=NULL;
-	node.down=NULL;
-	node.left=NULL;
+vertex createVertex(int x, int y){
+	vertex v;
+	v.x=x;
+	v.y=y;
+	v.rep=NULL;
 	return node;
 }
 
-void connectNode(Dcel *node1, Dcel *node2){
-	if(*node1.x == *node2.x){
-		if(*node1.y > *node2.y){
-			*node2.up=node1;
-			*node1.down=node2;
-			return;
-		}
-		else if(*node1.y < *node2.y){
-			*node2.down=node1;
-			*node1.up=node2;
-			return;
-		}
+half_edge **createPolygon(int num, vertex **listCCW, face *in, face *out){
+	half_edge **listFront, **listBack;
+	listFront=malloc(sizeof(half_edge *) * num);
+	listBack=malloc(sizeof(half_edge *) * num);
+	for(int i=0; i<num; i++){
+		listFront[i]=malloc(sizeof(half_edge));
+		listFront[i]->face=in;
+		listFront[i]->origin=listCCW[i];
+		listBack[i]=malloc(sizeof(half_edge));
+		listBack[i]->face=out;
+		listBack[i]->origin=listCCW[(i+1)%num];
+		listFront[i]->twin=listBack[i];
+		listBack[i]->twin=listFront[i];
+		listCCW[i]->rep=listFront[i];
 	}
-	else if(*node1.y == *node2.y){
-		if(*node1.x > *node2.x){
-			*node2.right=node1;
-			*node1.left=node2;
-			return;
-		}
-		else if(*node1.x < *node2.x){
-			*node2.left=node1;
-			*node1.right=node2;
-			return;
-		}
+	if(in->rep==NULL){
+		in->rep=listFront[0];
 	}
-	printf("Error connecting (%d,%d) and (%d,%d)\n", 
-			*node1.x, *node1.y,
-		       	*node2.x, *node2.y);
-	return;
+	if(out->rep==NULL){
+		out->rep=listBack[num-1];
+	}
+	for(int i=0; i<num; i++){
+		listFront[i]->next=listFront[(i+1)%num];
+		listFront[i]->prev=listFront[(i+num-1)%num];
+		listBack[i]->next=listBack[(i+num-1)%num];
+		listBack[i]->prev=listBack[(i+1)%num];
+	}
+	return listFront;
 }
-
-void insertNode(Dcel *insert, Dcel *node1, Dcel *node2){
-	connectNode(*insert, node1);
-	connectNode(*insert, node2);
-}
-	
-

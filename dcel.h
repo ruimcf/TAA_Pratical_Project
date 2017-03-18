@@ -1,13 +1,19 @@
 
-typedef struct s_dcel {
-	int x, y;
-	struct s_dcel *up, *right, *down, *left;
-} Dcel;
+typedef struct s_half_edge {
+	struct s_half_edge *prev, *next, *twin;
+	vertex *origin;
+	face *face; //face on the left
+} half_edge;
 
-Dcel createNode(int x, int y);
+typedef struct vertex{
+	int x,y;
+	half_edge *rep;
+} vertex;
 
-void connectNode(Dcel *node1, Dcel *node2);
+typedef struct face{
+	half_edge *rep;
+} face;
 
-//inserts "insert" node between node1 and node2
-void insertNode(Dcel insert, Dcel *node1, Dcel *node2);
+vertex createVertex(int x, int y);
 
+half_edge **createPolygon(int num, vertex *listCCW, face *in, face *out);
