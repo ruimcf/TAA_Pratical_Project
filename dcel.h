@@ -16,4 +16,8 @@ typedef struct face{
 
 vertex createVertex(int x, int y);
 
+vertex **initVertexList(int size);
+
 half_edge **createPolygon(int num, vertex *listCCW, face *in, face *out);
+
+void printVertex(vertex **list, int size);//todo print DCEL
