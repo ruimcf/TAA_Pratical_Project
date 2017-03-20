@@ -33,6 +33,8 @@ void createPolygon(int num, vertex **listCCW, face *in, face *out);
 
 void insertVertex(vertex *v, half_edge *he);
 
+void insertEdge(vertex *src, vertex *dest, face *keepFace, face *newFace);
+
 void printVertexList(vertex **list, int size);
 
-void printDCEL(vertex **list, int size);//todo print DCEL
+void printDCEL(vertex **list, int size);

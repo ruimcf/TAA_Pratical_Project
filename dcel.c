@@ -136,8 +136,46 @@ void insertVertex(vertex *v, half_edge *he){
 	return;
 }
 
-//void insertEdge() todo
-
+void insertEdge(vertex *src, vertex *dest,face *keepFace, face *newFace){
+	half_edge *front=malloc(sizeof(half_edge)),
+		  *back=malloc(sizeof(half_edge)),
+		  *tmp;
+	front->origin=src;
+	front->twin=back;
+	front->face=keepFace;
+	back->origin=dest;
+	back->twin=front;
+	back->face=newFace;
+	tmp=dest->rep;
+	while(tmp->face!=keepFace){
+		tmp=tmp->twin->next;
+	}
+	front->next=tmp;
+	tmp->prev=front;
+	tmp=src->rep->twin;
+	while(tmp->face!=keepFace){
+		tmp=tmp->next->twin;
+	}
+	front->prev=tmp;
+	tmp->next=front;
+	tmp=dest->rep->twin;
+	while(tmp->face!=keepFace){
+		tmp=tmp->next->twin;
+	}
+	back->prev=tmp;
+	tmp->next=back;
+	tmp=src->rep;
+	while(tmp->face!=keepFace){
+		tmp=tmp->twin->next;
+	}
+	back->next=tmp;
+	tmp->prev=back;
+	while(tmp->face==keepFace){
+		tmp->face=newFace;
+		tmp=tmp->next;
+	}
+	return;
+}
 
 void printVertexList(vertex **list, int size){
 	for(int i=0; i<size; i++){
