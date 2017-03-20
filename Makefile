@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-std99
+CFLAGS=-std=c99 -g
 
 all: example
 
