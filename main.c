@@ -37,12 +37,16 @@ void input(){
         /* ADD vertex to structure and connect with last vertex*/
 	list[i]=createVertex(vertexX, vertexY);
     }
+    face *in, *out;
+    createPolygon(numberOfVertices, list, in, out);
     printVertexList(list, numberOfVertices);
     sortVertexListX(list, numberOfVertices);
     printVertexList(list, numberOfVertices);
     sortVertexListY(list, numberOfVertices);
     printVertexList(list, numberOfVertices);
-    printVertex(list, numberOfVertices);
+
+
+    printDCEL(list, numberOfVertices);
     printf("Number of Holes\n");
     scanf("%d", &numberOfHoles);
     for(i = 0; i < numberOfHoles; i++){

@@ -131,10 +131,12 @@ void insertVertex(vertex *v, half_edge *he){
 	if(he->twin->face->rep==he->twin){
 		he->twin->face->rep=in1;
 	}
+	free(he->twin);
+	free(he);
 	return;
 }
 
-void insertEdge() todo
+//void insertEdge() todo
 
 
 void printVertexList(vertex **list, int size){
@@ -143,7 +145,7 @@ void printVertexList(vertex **list, int size){
 	}
 }
 
-void printVertex(vertex **list, int size){//todo print DCEL
+void printDCEL(vertex **list, int size){
 	int xMax,
 	    yMax,
 	    pos;
@@ -164,6 +166,47 @@ void printVertex(vertex **list, int size){//todo print DCEL
 	for(int i=0; i<size; i++){
 		pos=(list[i]->x) + (list[i]->y * xMax);
 		screen[pos]='X';
+		half_edge *edge=list[i]->rep;
+		do{
+			vertex *connect = edge->twin->origin;
+			if(connect->x == list[i]->x){
+				if(connect->y > list[i]->y){
+					int up=connect->y,
+					    down=list[i]->y;
+					for(int e=down+1; e<down+(up-down-1)/2; e++){
+						screen[connect->x + e*xMax]='|';
+					}
+					screen[connect->x + (down+(up-down-1)/2)*xMax]='^';
+				}
+				else{
+					int up=list[i]->y,
+					    down=connect->y;
+					for(int e=up-1; e>up-(up-down-1)/2; e--){
+						screen[connect->x + e*xMax]='|';
+					}
+					screen[connect->x + (up-(up-down-1)/2)*xMax]='v';
+				}
+			}
+			else if(connect->y == list[i]->y){
+				if(connect->x > list[i]->x){
+					int right=connect->x,
+					    left=list[i]->x;
+					for(int e=left+1; e<left+(right-left-1)/2; e++){
+						screen[e + connect->y*xMax]='-';
+					}
+					screen[(left+(right-left-1)/2) + connect->y*xMax]='>';
+				}
+				else{
+					int right=list[i]->x,
+					    left=connect->x;
+					for(int e=right-1; e>left-(left-right-1)/2; e--){
+						screen[e + connect->y*xMax]='-';
+					}
+					screen[(left-(left-right-1)/2) + connect->y*xMax]='<';
+				}
+			}
+			edge=edge->twin->next;
+		}while(edge!=list[i]->rep);
 	}
 	for(int i=yMax-1; i>=0; i--){
 		for(int e=0; e<xMax; e++){

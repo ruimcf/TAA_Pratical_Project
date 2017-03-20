@@ -35,4 +35,4 @@ void insertVertex(vertex *v, half_edge *he);
 
 void printVertexList(vertex **list, int size);
 
-void printVertex(vertex **list, int size);//todo print DCEL
+void printDCEL(vertex **list, int size);//todo print DCEL
