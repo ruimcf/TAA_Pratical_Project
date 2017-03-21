@@ -131,6 +131,8 @@ void insertVertex(vertex *v, half_edge *he){
 	if(he->twin->face->rep==he->twin){
 		he->twin->face->rep=in1;
 	}
+	he->origin->rep=in2;
+	he->twin->origin->rep=in1;
 	free(he->twin);
 	free(he);
 	return;
@@ -140,6 +142,7 @@ void insertEdge(vertex *src, vertex *dest,face *keepFace, face *newFace){
 	half_edge *front=malloc(sizeof(half_edge)),
 		  *back=malloc(sizeof(half_edge)),
 		  *tmp;
+	newFace=malloc(sizeof(face));
 	front->origin=src;
 	front->twin=back;
 	front->face=keepFace;
@@ -180,8 +183,15 @@ void insertEdge(vertex *src, vertex *dest,face *keepFace, face *newFace){
 }
 
 void printVertexList(vertex **list, int size){
+	half_edge *tmp;
 	for(int i=0; i<size; i++){
-		printf("(%d,%d)\n", list[i]->x, list[i]->y);
+		printf("(%d,%d): ", list[i]->x, list[i]->y);
+		tmp=list[i]->rep;
+		do{
+			printf("(%d,%d) ", tmp->twin->origin->x, tmp->twin->origin->y);
+			tmp=tmp->twin->next;
+		}while(tmp!=list[i]->rep);
+		printf("\n");
 	}
 }
 

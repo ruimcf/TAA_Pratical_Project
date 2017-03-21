@@ -32,7 +32,7 @@ void sortVertexListY(vertex **list, int size);
 void createPolygon(int num, vertex **listCCW, face *in, face *out);
 
 void insertVertex(vertex *v, half_edge *he);
-
+//keepFace on the left
 void insertEdge(vertex *src, vertex *dest, face *keepFace, face *newFace);
 
 void printVertexList(vertex **list, int size);

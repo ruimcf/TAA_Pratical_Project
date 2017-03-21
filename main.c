@@ -39,12 +39,25 @@ void input(){
     }
     face *in, *out;
     createPolygon(numberOfVertices, list, in, out);
-    printVertexList(list, numberOfVertices);
-    sortVertexListX(list, numberOfVertices);
-    printVertexList(list, numberOfVertices);
-    sortVertexListY(list, numberOfVertices);
+    vertex *insert =createVertex(0, 5);
+    half_edge *edge=in->rep;
+    while(edge->origin->x!=0 || edge->origin->y!=10){
+	    edge=edge->next;
+    }
+    insertVertex(insert, edge);
+printf("size: %d\n", sizeof(list));
+    changeVertexListSize( list, numberOfVertices+1);
+    list[numberOfVertices]=insert;
+    numberOfVertices++;
+    printf("size: %d\n", sizeof(list));
+	
+    face *newFace;
+    insertEdge(list[2], list[numberOfVertices-1], in, newFace);
+
+
     printVertexList(list, numberOfVertices);
 
+    printf("image\n");
 
     printDCEL(list, numberOfVertices);
     printf("Number of Holes\n");
