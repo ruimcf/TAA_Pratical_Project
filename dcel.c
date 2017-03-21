@@ -174,6 +174,8 @@ void insertEdge(vertex *src, vertex *dest,face *keepFace, face *newFace){
 		tmp->face=newFace;
 		tmp=tmp->next;
 	}
+	keepFace->rep=front;
+	newFace->rep=back;
 	return;
 }
 
