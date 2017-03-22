@@ -40,3 +40,5 @@ void insertEdge(vertex *src, vertex *dest, face *keepFace, face *newFace);
 void printVertexList(vertex **list, int size);
 
 void printDCEL(vertex **list, int size);
+
+int vertexConnected(vertex* vertex1, vertex* vertex2);

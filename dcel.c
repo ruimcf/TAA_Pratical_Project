@@ -203,6 +203,17 @@ void printVertexList(vertex **list, int size){
 	}
 }
 
+int vertexConnected(vertex* vertex1, vertex* vertex2){
+	half_edge *tmp = vertex1->rep;
+    do{
+        if(tmp->twin->origin->x == vertex2->x && tmp->twin->origin->y == vertex2->y){
+            return 1;
+        }
+        tmp=tmp->twin->next;
+    }while(tmp!=vertex1->rep);
+    return 0;
+}
+
 void printDCEL(vertex **list, int size){
 	int xMax,
 	    yMax,
@@ -223,7 +234,7 @@ void printDCEL(vertex **list, int size){
 	memset(screen, ' ', xMax*yMax);
 	for(int i=0; i<size; i++){
 		pos=(list[i]->x) + (list[i]->y * xMax);
-		screen[pos]='X';
+		screen[pos]='0';
 		half_edge *edge=list[i]->rep;
 		do{
 			vertex *connect = edge->twin->origin;
