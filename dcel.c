@@ -276,4 +276,23 @@ void printDCEL(vertex **list, int size){
 	return;
 }
 
+void addToList(edge_list **head, half_edge *edge){
+	edge_list *add=malloc(sizeof(edge_list)),
+		  *tmp=*head;
+	add->edge=edge;
+	*head=add;
+	add->next=tmp;
+	return;
+}
 
+void rmFromList(edge_list **head, half_edge *edge){
+	edge_list **ptr=head,
+		  *tmp;
+	while((*ptr)->edge!=edge){
+		ptr=&((*ptr)->next);
+	}
+	tmp=*ptr;
+	*ptr=(*ptr)->next;
+	free(tmp);
+	return;
+}

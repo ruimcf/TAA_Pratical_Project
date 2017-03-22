@@ -17,6 +17,11 @@ typedef struct face{
 	half_edge *rep;
 } face;
 
+typedef struct s_edge_list{
+	struct s_edge_list *next;
+	half_edge *edge;
+} edge_list;
+
 face *createFace();
 
 vertex *createVertex(int x, int y);
@@ -40,3 +45,8 @@ void insertEdge(vertex *src, vertex *dest, face *keepFace, face *newFace);
 void printVertexList(vertex **list, int size);
 
 void printDCEL(vertex **list, int size);
+
+void addToList(edge_list **head, half_edge *edge);
+
+void rmFromList(edge_list **head, half_edge *edge);
+
