@@ -17,6 +17,8 @@ typedef struct face{
 	half_edge *rep;
 } face;
 
+face *createFace();
+
 vertex *createVertex(int x, int y);
 
 vertex **initVertexList(int size);

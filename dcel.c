@@ -3,6 +3,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+// Astruct* a,
+// b;
+
+face *createFace(){
+	face *f = malloc(sizeof(face));
+	return f;
+}
+
 vertex *createVertex(int x, int y){
 	vertex *v = malloc(sizeof(vertex));
 	v->x=x;
@@ -11,7 +19,7 @@ vertex *createVertex(int x, int y){
 	return v;
 }
 
-vertex ** initVertexList(int size){
+vertex **initVertexList(int size){
 	vertex **list;
 	list=malloc(sizeof(vertex *) * size);
 	return list;
@@ -96,10 +104,10 @@ void createPolygon(int num, vertex **listCCW, face *in, face *out){
 }
 
 void insertVertex(vertex *v, half_edge *he){
-	half_edge *out1=malloc(sizeof(half_edge)),
-		  *out2=malloc(sizeof(half_edge)),
-		  *in1=malloc(sizeof(half_edge)),
-		  *in2=malloc(sizeof(half_edge));
+	half_edge *out1 = malloc(sizeof(half_edge)),
+		  *out2 = malloc(sizeof(half_edge)),
+		  *in1 = malloc(sizeof(half_edge)),
+		  *in2 = malloc(sizeof(half_edge));
 	out1->origin=v;
 	out1->face=he->face;
 	out1->next=he->next;
