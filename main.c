@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <dcel.h>
 
 /*
@@ -15,14 +16,22 @@
  *		-Update Partition structure
  */
 int input();
+void horizontalGrid();
+
+vertex** list;
+int option;
+int numberOfVertices;
+int numberOfHoles;
 
 int main(int argc, char *argv[]){
-	vertex **vertices;
-	int listSize = input(vertices);
+	int listSize = input();
+    if(option == 0)
+        horizontalGrid();
+    free(list);
 }
 
-int input(vertex **list){
-	int option, numberOfVertices, numberOfHoles, numberOfVerticesHole;
+int input(){
+	int numberOfVerticesHole;
 	int vertexX, vertexY;
 
 	printf("Select OPTION\n0 For Horizontal Partition\n1 For Grid Partition\n");
@@ -44,17 +53,52 @@ int input(vertex **list){
 	face **listFaceHole=malloc(sizeof(face*));
 	for(int i = 0; i < numberOfHoles; i++){
 		listFaceHole[i]=createFace();
-		printf("Number of vertices in %d Hole\n", i+1);
+		printf("Number of vertices in Hole[%d]\n", i);
 		scanf("%d", &numberOfVerticesHole);
 		vertex **listHole = initVertexList(numberOfVerticesHole);
-		for(int e=0; e<numberOfVerticesHole; e++){
+		for(int j=0; j<numberOfVerticesHole; j++){
 			scanf("%d %d", &vertexX, &vertexY);
-			listHole[e]=createVertex(vertexX, vertexY);
+			listHole[j]=createVertex(vertexX, vertexY);
 		}
 		createPolygon(numberOfVerticesHole, listHole, in, listFaceHole[i]);
 		catVertexList(list, numberOfVertices, listHole, numberOfVerticesHole);
 		numberOfVertices+=numberOfVerticesHole;
 	}
+    printDCEL(list, numberOfVertices);
+    
 	free(listFaceHole);
 	return numberOfVertices;
+}
+
+
+void horizontalGrid(){
+    int i = 0;
+
+    printVertexList(list, numberOfVertices);
+    sortVertexListY(list, numberOfVertices);
+    printVertexList(list, numberOfVertices);
+    while(i < numberOfVertices){
+        vertex** listToConsider;
+        vertex* temp_vertex = list[i];
+        int vertexY = temp_vertex->y;
+        int sizeToConsider = 1;
+        i++;
+        while(i < numberOfVertices && list[i]->y == vertexY){
+            i++;
+            sizeToConsider++;
+        }
+        listToConsider = initVertexList(sizeToConsider);
+        for(int j = 0; j < sizeToConsider; j++){
+            listToConsider[j] = list[i-sizeToConsider+j];
+            if(j>0){
+                if(vertexConnected(listToConsider[j-1], listToConsider[j])){
+                    printf("Vertex (%d, %d) connected to (%d, %d)\n", listToConsider[j-1]->x, listToConsider[j-1]->y, listToConsider[j]->x, listToConsider[j]->y);
+                }
+            }
+        }
+        printf("Vertices to consider:\n");
+        printVertexList(listToConsider, sizeToConsider);
+
+    }
+    
 }

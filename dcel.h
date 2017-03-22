@@ -50,3 +50,4 @@ void addToList(edge_list **head, half_edge *edge);
 
 void rmFromList(edge_list **head, half_edge *edge);
 
+int vertexConnected(vertex* vertex1, vertex* vertex2);
