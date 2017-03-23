@@ -90,25 +90,18 @@ void horizontalGrid(){
 		listToConsider = initVertexList(sizeToConsider);
 		for(int j = 0; j < sizeToConsider; j++){
 			listToConsider[j] = list[i-sizeToConsider+j];
-			if(j>0){
-				if(vertexConnected(listToConsider[j-1], listToConsider[j])){
-                    if(getUpEdge(listToConsider[j]) != NULL){
-                        addToList(sweep_line, getUpEdge(listToConsider[j]));
-                    }
-                    if(getUpEdge(listToConsider[j-1]) != NULL){
-                        addToList(sweep_line, getUpEdge(listToConsider[j-1]));
-                    }
-				}
+            if(getUpEdge(listToConsider[j]) != NULL){
+                addToListByX(sweep_line, getUpEdge(listToConsider[j]));
             }
 		}
+		printf("Vertices to consider:\n");
+		printVertexList(listToConsider, sizeToConsider);
         printf("Printing sweep_line list:\n");
         link_list *tmp = *sweep_line;
         while(tmp != NULL){
             printf("Edge origin: (%d,%d) | destination: (%d, %d)\n", tmp->item->origin->x, tmp->item->origin->y, tmp->item->next->origin->x, tmp->item->next->origin->y);
             tmp = tmp -> next;
         }
-		printf("Vertices to consider:\n");
-		printVertexList(listToConsider, sizeToConsider);
 
 	}
 	

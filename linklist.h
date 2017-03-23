@@ -7,4 +7,6 @@ typedef struct s_link_list{
 
 void addToList(link_list **head, half_edge *item);
 
+void addToListByX(link_list **head, half_edge *item);
+
 void rmFromList(link_list **head, half_edge *item);
