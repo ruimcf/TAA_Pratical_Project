@@ -50,13 +50,29 @@ void addToListByX(link_list **head, half_edge *item){
 }
 
 void rmFromList(link_list **head, half_edge *item){
-	link_list **ptr=head,
-		  *tmp;
+	link_list **ptr=head;
+	link_list *tmp;
+    link_list *prev = *head;
+    int i = 0;
 	while((*ptr)->item!=item){
+        if(i != 0){
+            prev = prev->next;
+        }
 		ptr=&((*ptr)->next);
+        i++;
 	}
-	tmp=*ptr;
-	*ptr=(*ptr)->next;
-	free(tmp);
+    /* When we remove the first one */
+    if(i == 0){
+    printf("The edge was found! origin (%d,%d)\n",(*ptr)->item->origin->x, (*ptr)->item->origin->x);
+        tmp = *head;
+        *head = (*head)->next;
+        free(tmp);
+    }
+    /* When we remove some other, need to connect the previous */
+    else{
+        tmp=*ptr;
+        prev->next=(*ptr)->next;
+        free(tmp);
+    }
 	return;
 }

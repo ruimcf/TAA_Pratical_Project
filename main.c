@@ -90,19 +90,44 @@ void horizontalGrid(){
 		listToConsider = initVertexList(sizeToConsider);
 		for(int j = 0; j < sizeToConsider; j++){
 			listToConsider[j] = list[i-sizeToConsider+j];
-            if(getUpEdge(listToConsider[j]) != NULL){
-                addToListByX(sweep_line, getUpEdge(listToConsider[j]));
+            if(j > 0 && vertexConnected(listToConsider[j-1], listToConsider[j])){
+                link_list *tmp = *sweep_line;
+                vertex *a = listToConsider[j-1];
+                vertex *b = listToConsider[j];
+                int not_done = 1;
+                while(not_done){
+                    /* Case 5 and 9:
+                     * When we can insert a new segment and there is no segmentation */
+                    if(tmp == NULL || (b->x < tmp->item->origin->x)){
+                        addToListByX(sweep_line, getUpEdge(a));
+                        addToListByX(sweep_line, getUpEdge(b));
+                    }
+
+                    /* Case 1:
+                     * When the new segment is in between a segment in the sweep line. */
+                    else if((a->x > tmp->item->origin->x) && (b->x < tmp->next->item->origin->x)){
+                        /* NEED TO TRACE SEGMENTATION */
+                        addToListByX(sweep_line, getUpEdge(a));
+                        addToListByX(sweep_line, getUpEdge(b));
+                    }
+
+                    /* Case 2:
+                     * When the new segment is connected with its right side to sweep line. */
+                    else if((a->x < tmp->item->origin->x) && (b->x == tmp->item->origin->x)){
+                        addToListByX(sweep_line, getUpEdge(a));
+                        rmFromList(sweep_line, tmp->item);
+                    }
+                    not_done = 0;
+                }       
             }
 		}
-		printf("Vertices to consider:\n");
-		printVertexList(listToConsider, sizeToConsider);
         printf("Printing sweep_line list:\n");
         link_list *tmp = *sweep_line;
         while(tmp != NULL){
             printf("Edge origin: (%d,%d) | destination: (%d, %d)\n", tmp->item->origin->x, tmp->item->origin->y, tmp->item->next->origin->x, tmp->item->next->origin->y);
             tmp = tmp -> next;
         }
-
+		printf("Vertices to consider:\n");
+		printVertexList(listToConsider, sizeToConsider);
 	}
-	
 }
