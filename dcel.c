@@ -3,9 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Astruct* a,
-// b;
-
 face *createFace(){
 	face *f = malloc(sizeof(face));
 	return f;
@@ -43,7 +40,7 @@ void sortVertexListX(vertex **list, int size){
 	do{
 		newn=0;
 		for(int i=1; i<size; i++){
-			if(list[i-1]->x > list[i]->x){
+			if((list[i-1]->x > list[i]->x) || ((list[i-1]->x == list[i]->x) && (list[i-1]->y > list[i]->y))){
 				tmp=list[i-1];
 				list[i-1]=list[i];
 				list[i]=tmp;
@@ -60,7 +57,7 @@ void sortVertexListY(vertex **list, int size){
 	do{
 		newn=0;
 		for(int i=1; i<size; i++){
-			if(list[i-1]->y > list[i]->y){
+			if((list[i-1]->y > list[i]->y) || ((list[i-1]->y == list[i]->y) && (list[i-1]->x > list[i]->x))){
 				tmp=list[i-1];
 				list[i-1]=list[i];
 				list[i]=tmp;
@@ -287,23 +284,3 @@ void printDCEL(vertex **list, int size){
 	return;
 }
 
-void addToList(edge_list **head, half_edge *edge){
-	edge_list *add=malloc(sizeof(edge_list)),
-		  *tmp=*head;
-	add->edge=edge;
-	*head=add;
-	add->next=tmp;
-	return;
-}
-
-void rmFromList(edge_list **head, half_edge *edge){
-	edge_list **ptr=head,
-		  *tmp;
-	while((*ptr)->edge!=edge){
-		ptr=&((*ptr)->next);
-	}
-	tmp=*ptr;
-	*ptr=(*ptr)->next;
-	free(tmp);
-	return;
-}
