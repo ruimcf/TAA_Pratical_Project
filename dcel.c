@@ -40,7 +40,9 @@ void sortVertexListX(vertex **list, int size){
 	do{
 		newn=0;
 		for(int i=1; i<size; i++){
-			if((list[i-1]->x > list[i]->x) || ((list[i-1]->x == list[i]->x) && (list[i-1]->y > list[i]->y))){
+			if((list[i-1]->x > list[i]->x) || 
+			  ((list[i-1]->x == list[i]->x) && 
+			   (list[i-1]->y > list[i]->y))){
 				tmp=list[i-1];
 				list[i-1]=list[i];
 				list[i]=tmp;
@@ -57,7 +59,9 @@ void sortVertexListY(vertex **list, int size){
 	do{
 		newn=0;
 		for(int i=1; i<size; i++){
-			if((list[i-1]->y > list[i]->y) || ((list[i-1]->y == list[i]->y) && (list[i-1]->x > list[i]->x))){
+			if((list[i-1]->y > list[i]->y) || 
+			  ((list[i-1]->y == list[i]->y) && 
+			   (list[i-1]->x > list[i]->x))){
 				tmp=list[i-1];
 				list[i-1]=list[i];
 				list[i]=tmp;
