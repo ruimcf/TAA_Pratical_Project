@@ -83,44 +83,138 @@ void horizontalGrid(){
 		int vertexY = temp_vertex->y;
 		int sizeToConsider = 1;
 		i++;
-		while(i < numberOfVertices && list[i]->y == vertexY){
-			i++;
-			sizeToConsider++;
+		while(i < numberOfVertices){
+            if(list[i]->y == vertexY){
+			    i++;
+			    sizeToConsider++;
+            }
+            else
+                break;
 		}
 		listToConsider = initVertexList(sizeToConsider);
 		for(int j = 0; j < sizeToConsider; j++){
 			listToConsider[j] = list[i-sizeToConsider+j];
+        }
+		for(int j = 0; j < sizeToConsider; j++){
+            link_list *tmp = *sweep_line;
             if(j > 0 && vertexConnected(listToConsider[j-1], listToConsider[j])){
-                link_list *tmp = *sweep_line;
                 vertex *a = listToConsider[j-1];
                 vertex *b = listToConsider[j];
-                int not_done = 1;
-                while(not_done){
-                    /* Case 5 and 9:
+                /* Case 9:
+                 * When we can insert a new segment and there is no segmentation */
+                if(tmp == NULL){
+                    addToListByX(sweep_line, getUpEdge(a));
+                    addToListByX(sweep_line, getUpEdge(b));
+                }
+                while(tmp != NULL){
+                    /* Case 5:
                      * When we can insert a new segment and there is no segmentation */
-                    if(tmp == NULL || (b->x < tmp->item->origin->x)){
+                    if(b->x < tmp->item->origin->x){
                         addToListByX(sweep_line, getUpEdge(a));
                         addToListByX(sweep_line, getUpEdge(b));
+                        break;
                     }
-
                     /* Case 1:
                      * When the new segment is in between a segment in the sweep line. */
                     else if((a->x > tmp->item->origin->x) && (b->x < tmp->next->item->origin->x)){
                         /* NEED TO TRACE SEGMENTATION */
                         addToListByX(sweep_line, getUpEdge(a));
                         addToListByX(sweep_line, getUpEdge(b));
+                        break;
                     }
-
                     /* Case 2:
                      * When the new segment is connected with its right side to sweep line. */
                     else if((a->x < tmp->item->origin->x) && (b->x == tmp->item->origin->x)){
                         addToListByX(sweep_line, getUpEdge(a));
                         rmFromList(sweep_line, tmp->item);
+                        break;
                     }
-                    not_done = 0;
+                    else if(tmp->next->next != NULL){
+                        /* Case 3:
+                         * When the segment is connected with its left side to the sweep line. */
+                        if((a->x == tmp->next->item->origin->x) && (b->x < tmp->next->next->item->origin->x)){
+                            /* NEEDS SEGMENTATION */
+                            addToListByX(sweep_line, getUpEdge(b));
+                            rmFromList(sweep_line, tmp->next->item);
+                            break;
+                        }
+                        /* Case 4:
+                         * When the segment is connected both sides with the sweep line. */
+                        else if((a->x == tmp->next->item->origin->x) && (b->x == tmp->next->next->item->origin->x)){
+                            /* NEEDS SEGMENTATION */
+                            rmFromList(sweep_line, tmp->next->next->item);
+                            rmFromList(sweep_line, tmp->next->item);
+                            break;
+                        }
+                    } 
+                    /* Case 6:
+                     * When inside sweep line, connected at left */
+                    if((a->x == tmp->item->origin->x) && (b->x < tmp->next->item->origin->x)){
+                        /* NEEDS SEGMENTATION */
+                        rmFromList(sweep_line, tmp->item);
+                        addToListByX(sweep_line, getUpEdge(b));
+                        break;
+                    }
+                    /* Case 7:
+                     * When inside sweep line, connected at right */
+                    else if((a->x > tmp->item->origin->x) && (b->x == tmp->next->item->origin->x)){
+                        /* NEEDS SEGMENTATION */
+                        addToListByX(sweep_line, getUpEdge(a));
+                        rmFromList(sweep_line, tmp->next->item);
+                        break;
+                    }
+                    /* Case 8:
+                     * when inside sweep line, connected at both sides, no segmentation */
+                    else if((a->x == tmp->item->origin->x) && (b->x == tmp->next->item->origin->x)){
+                        rmFromList(sweep_line, tmp->next->item);
+                        rmFromList(sweep_line, tmp->item);
+                        break;
+                    }
+                    else{
+                        tmp = tmp->next->next;
+                        if(tmp == NULL){
+                            addToListByX(sweep_line, getUpEdge(a));
+                            addToListByX(sweep_line, getUpEdge(b));
+                            break;
+                        }
+                    }
                 }       
             }
+            /* When vertical colinear point */
+            else if(sizeToConsider == 1){
+                while(tmp->item->origin->x != listToConsider[j]->x){
+                    tmp = tmp->next;
+                }
+                rmFromList(sweep_line, tmp->item);
+                addToListByX(sweep_line, getUpEdge(listToConsider[j]));
+                /* NEEDS SEGMENTATION */
+            }
+            else if((j == 0) && !vertexConnected(listToConsider[j], listToConsider[j+1])){
+                while(tmp->item->origin->x != listToConsider[j]->x){
+                    tmp = tmp->next;
+                }
+                rmFromList(sweep_line, tmp->item);
+                addToListByX(sweep_line, getUpEdge(listToConsider[j]));
+                /* NEEDS SEGMENTATION */
+            }
+            else if((j > 0) && (j < sizeToConsider-1) && !vertexConnected(listToConsider[j], listToConsider[j+1]) && !vertexConnected(listToConsider[j], listToConsider[j-1])){
+                while(tmp->item->origin->x != listToConsider[j]->x){
+                    tmp = tmp->next;
+                }
+                rmFromList(sweep_line, tmp->item);
+                addToListByX(sweep_line, getUpEdge(listToConsider[j]));
+                /* NEEDS SEGMENTATION */
+            }
+            else if((j == sizeToConsider-1) && !vertexConnected(listToConsider[j], listToConsider[j-1])){
+                while(tmp->item->origin->x != listToConsider[j]->x){
+                    tmp = tmp->next;
+                }
+                rmFromList(sweep_line, tmp->item);
+                addToListByX(sweep_line, getUpEdge(listToConsider[j]));
+                /* NEEDS SEGMENTATION */
+            }
 		}
+
         printf("Printing sweep_line list:\n");
         link_list *tmp = *sweep_line;
         while(tmp != NULL){
