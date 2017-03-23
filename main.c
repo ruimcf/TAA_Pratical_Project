@@ -92,18 +92,21 @@ void horizontalGrid(){
 			listToConsider[j] = list[i-sizeToConsider+j];
 			if(j>0){
 				if(vertexConnected(listToConsider[j-1], listToConsider[j])){
-					printf("Vertex (%d, %d) connected to (%d, %d)\n", listToConsider[j-1]->x, listToConsider[j-1]->y, listToConsider[j]->x, listToConsider[j]->y);
-                    addToList(sweep_line, listToConsider[j]->rep);
-                    addToList(sweep_line, listToConsider[j-1]->rep);
-                    printf("Printing sweep_line list:\n");
-                    link_list *tmp = *sweep_line;
-                    while(tmp != NULL){
-                        printf("Edge origin: (%d,%d) | destination: (%d, %d)\n",tmp->item->origin->x, tmp->item->origin->y, tmp->item->next->origin->x, tmp->item->next->origin->y);
-                        tmp = tmp -> next;
+                    if(getUpEdge(listToConsider[j]) != NULL){
+                        addToList(sweep_line, getUpEdge(listToConsider[j]));
+                    }
+                    if(getUpEdge(listToConsider[j-1]) != NULL){
+                        addToList(sweep_line, getUpEdge(listToConsider[j-1]));
                     }
 				}
             }
 		}
+        printf("Printing sweep_line list:\n");
+        link_list *tmp = *sweep_line;
+        while(tmp != NULL){
+            printf("Edge origin: (%d,%d) | destination: (%d, %d)\n", tmp->item->origin->x, tmp->item->origin->y, tmp->item->next->origin->x, tmp->item->next->origin->y);
+            tmp = tmp -> next;
+        }
 		printf("Vertices to consider:\n");
 		printVertexList(listToConsider, sizeToConsider);
 

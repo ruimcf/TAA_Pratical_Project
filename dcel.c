@@ -3,6 +3,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+half_edge * getUpEdge(vertex * vertex1){
+	half_edge *tmp = vertex1->rep;
+    do{
+        if(tmp->twin->origin->x == vertex1->x && tmp->twin->origin->y > vertex1->y){
+            return tmp;
+        }
+        tmp=tmp->twin->next;
+    }while(tmp!=vertex1->rep);
+    return NULL;
+}
+
 face *createFace(){
 	face *f = malloc(sizeof(face));
 	return f;
