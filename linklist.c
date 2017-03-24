@@ -76,3 +76,16 @@ void rmFromList(link_list **head, half_edge *item){
 	free(tmp);
 	return;
 }
+
+void printLinkList(link_list *head){
+	link_list *ptr=head;
+	while(ptr!=NULL){
+		printf("(%d,%d)->(%d,%d)\n", 
+				ptr->item->origin->x,
+				ptr->item->origin->y,
+				ptr->item->twin->origin->x,
+				ptr->item->twin->origin->y);
+		ptr=ptr->next;
+	}
+	return;
+}
