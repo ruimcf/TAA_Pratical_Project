@@ -9,4 +9,6 @@ void addToList(link_list **head, half_edge *item);
 
 void addToListByX(link_list **head, half_edge *item);
 
+void addToListByY(link_list **head, half_edge *item);
+
 void rmFromList(link_list **head, half_edge *item);
