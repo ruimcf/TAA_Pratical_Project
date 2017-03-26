@@ -299,3 +299,27 @@ void printDCEL(vertex **list, int size){
 	return;
 }
 
+half_edge *getConnectedEdge(vertex* vertex1, vertex* vertex2){
+	half_edge *tmp = vertex1->rep;
+    do{
+        if(tmp->twin->origin->x == vertex2->x && tmp->twin->origin->y == vertex2->y){
+            return tmp;
+        }
+        tmp=tmp->twin->next;
+    }while(tmp!=vertex1->rep);
+    return NULL;
+}
+
+vertex *getVertex(half_edge* edge, int x, int y){
+    if(edge->origin->x == x && edge->origin->y == y){
+        return edge->origin;
+    }
+    else if(edge->twin->origin->x == x && edge->twin->origin->y == y){
+        return edge->twin->origin;
+    }
+    else{
+        vertex *new = createVertex(x, y);
+        //insertVertex(new, edge);
+        return new;
+    }
+}

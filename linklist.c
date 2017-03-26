@@ -77,6 +77,27 @@ void rmFromList(link_list **head, half_edge *item){
 	return;
 }
 
+int addEventSweepLine(sweep_line_action ** sweep_line_action_list, int size, int action, half_edge *edge){
+    sweep_line_action * new = malloc(sizeof(sweep_line_action));
+    new->action = action;
+    new->edge = edge;
+    sweep_line_action_list[size] = new;
+    return size+1;
+}
+
+int runEventSweepLine(sweep_line_action ** sweep_line_action_list, int size, link_list ** sweep_line){
+    for(int i = 0; i < size; i++){
+        if(sweep_line_action_list[i]->action == 0){
+            addToListByX(sweep_line, sweep_line_action_list[i]->edge);
+        }
+        else if(sweep_line_action_list[i]->action == 1){
+            rmFromList(sweep_line, sweep_line_action_list[i]->edge);
+        }
+        free(sweep_line_action_list[i]);
+    }
+    return 0;
+}
+
 void printLinkList(link_list *head){
 	link_list *ptr=head;
 	while(ptr!=NULL){

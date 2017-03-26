@@ -43,4 +43,8 @@ void printDCEL(vertex **list, int size);
 
 int vertexConnected(vertex* vertex1, vertex* vertex2);
 
-half_edge * getUpEdge(vertex* vertex1);
+half_edge *getConnectedEdge(vertex* vertex1, vertex* vertex2);
+
+half_edge *getUpEdge(vertex* vertex1);
+
+vertex *getVertex(half_edge *edge, int x, int y);
