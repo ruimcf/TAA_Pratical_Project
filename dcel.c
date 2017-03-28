@@ -41,7 +41,7 @@ void changeVertexListSize(vertex **list, int newSize){
 void catVertexList(vertex **dest, int destSize, vertex **src, int srcSize){
 	changeVertexListSize(dest, destSize+srcSize);
 	memcpy(dest+destSize, src, srcSize);
-	free(src);
+	//free(src);
 	return;
 }
 //bubble sort to be replaced with a more eficient one
@@ -116,6 +116,7 @@ void createPolygon(int num, vertex **listCCW, face *in, face *out){
 }
 
 void insertVertex(vertex *v, half_edge *he){
+    printf("inserting vertex\n");
 	half_edge *out1 = malloc(sizeof(half_edge)),
 		  *out2 = malloc(sizeof(half_edge)),
 		  *in1 = malloc(sizeof(half_edge)),
@@ -152,7 +153,6 @@ void insertVertex(vertex *v, half_edge *he){
 		he->twin->face->rep=in1;
 	}
 	he->origin->rep=in2;
-	he->twin->origin->rep=in1;
 	free(he->twin);
 	free(he);
 	return;
@@ -205,7 +205,7 @@ void insertEdge(vertex *src, vertex *dest,face *keepFace, face *newFace){
 void printVertexList(vertex **list, int size){
 	half_edge *tmp;
 	for(int i=0; i<size; i++){
-		printf("(%d,%d): ", list[i]->x, list[i]->y);
+		printf("(%d,%d) ligado a: ", list[i]->x, list[i]->y);
 		tmp=list[i]->rep;
 		do{
 			printf("(%d,%d) ", tmp->twin->origin->x, tmp->twin->origin->y);
@@ -310,16 +310,3 @@ half_edge *getConnectedEdge(vertex* vertex1, vertex* vertex2){
     return NULL;
 }
 
-vertex *getVertex(half_edge* edge, int x, int y){
-    if(edge->origin->x == x && edge->origin->y == y){
-        return edge->origin;
-    }
-    else if(edge->twin->origin->x == x && edge->twin->origin->y == y){
-        return edge->twin->origin;
-    }
-    else{
-        vertex *new = createVertex(x, y);
-        //insertVertex(new, edge);
-        return new;
-    }
-}

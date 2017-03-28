@@ -4,10 +4,10 @@
 
 void addToList(link_list **head, half_edge *item){
 	link_list *add = malloc(sizeof(link_list));
-	add->item = item;
-	add->next = *head;
-	*head = add;
-	return;
+    add->item = item;
+    add->next = *head;
+    *head = add;
+    return;
 }
 
 void addToListByX(link_list **head, half_edge *item){
@@ -85,7 +85,9 @@ int addEventSweepLine(sweep_line_action ** sweep_line_action_list, int size, int
     return size+1;
 }
 
-int runEventSweepLine(sweep_line_action ** sweep_line_action_list, int size, link_list ** sweep_line){
+int runEventSweepLine(sweep_line_action ** sweep_line_action_list, int size, link_list ** sweep_line, int to_remove_2){
+    int save_size = 0;
+    sweep_line_action ** save = malloc(sizeof(sweep_line_action*)*size);
     for(int i = 0; i < size; i++){
         if(sweep_line_action_list[i]->action == 0){
             addToListByX(sweep_line, sweep_line_action_list[i]->edge);
@@ -93,9 +95,22 @@ int runEventSweepLine(sweep_line_action ** sweep_line_action_list, int size, lin
         else if(sweep_line_action_list[i]->action == 1){
             rmFromList(sweep_line, sweep_line_action_list[i]->edge);
         }
+        else if(sweep_line_action_list[i]->action == 2 && to_remove_2){
+            rmFromList(sweep_line, sweep_line_action_list[i]->edge);
+        }
+        else if(sweep_line_action_list[i]->action == 2 && !to_remove_2){
+            save[save_size] = malloc(sizeof(sweep_line_action));
+            save[save_size]->action = sweep_line_action_list[i]->action;
+            save[save_size]->edge = sweep_line_action_list[i]->edge;
+            save_size++;
+        }
         free(sweep_line_action_list[i]);
     }
-    return 0;
+    for(int i = 0; i<save_size; i++){
+        sweep_line_action_list[i] = save[i];
+    }
+    free(save);
+    return save_size;
 }
 
 void printLinkList(link_list *head){

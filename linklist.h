@@ -1,5 +1,6 @@
+#ifndef LINKLIST_H
+#define LINKLIST_H
 #include <dcel.h>
-
 typedef struct s_link_list{
 	struct s_link_list *next;
 	half_edge *item;
@@ -24,4 +25,6 @@ void printLinkList(link_list *head);
 
 int addEventSweepLine(sweep_line_action ** sweep_line_action_list, int size, int action, half_edge *edge);
 
-int runEventSweepLine(sweep_line_action ** sweep_line_action_list, int size, link_list ** sweep_line);
+int runEventSweepLine(sweep_line_action ** sweep_line_action_list, int size, link_list ** sweep_line, int to_remove_2);
+
+#endif /* LINKLIST_H */

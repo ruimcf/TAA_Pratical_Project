@@ -17,6 +17,11 @@ typedef struct face{
 	half_edge *rep;
 } face;
 
+typedef struct s_structInsertVertex{
+    half_edge *edge;
+    vertex *new;
+} structInsertVertex;
+
 face *createFace();
 
 vertex *createVertex(int x, int y);
@@ -47,4 +52,3 @@ half_edge *getConnectedEdge(vertex* vertex1, vertex* vertex2);
 
 half_edge *getUpEdge(vertex* vertex1);
 
-vertex *getVertex(half_edge *edge, int x, int y);
