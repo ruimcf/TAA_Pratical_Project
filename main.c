@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <linklist.h>
+#include <string.h>
 /*
  * Pseudo code to Horizontal sweep algorithm
  *
@@ -107,6 +108,12 @@ void initStructures(){
     sizeListVertexToInsert = 0;
     /* Init Segmentation Edges List */
     segmentationEdges = malloc(sizeof(link_list*));
+    /* Init List With segmentation */
+    listWithSegmentation = initVertexList(numberOfVertices);
+    memcpy(listWithSegmentation, list, sizeof(vertex*)*numberOfVertices);
+    numberOfVerticesWithSegmentation = numberOfVertices;
+    printf("List with segmentaion\n");
+    printVertexList(listWithSegmentation, numberOfVerticesWithSegmentation);
 }
 
 int getVertexToConsider(vertex ***listToConsider, int i, int direction){
@@ -296,14 +303,21 @@ void horizontalGrid(){
 		printVertexList(listToConsider, sizeToConsider);
 		printf("Printing sweep_line list:\n");
         size_sweep_line_action = runEventSweepLine(sweep_line_action_list, size_sweep_line_action, sweep_line, 1);
+        /* Insert the new vertex on the dcel */
+        vertex** tmp_list = initVertexList(sizeListVertexToInsert);
+        for(int k = 0; k<sizeListVertexToInsert; k++){
+            tmp_list[k] = listVertexToInsert[k]->new;
+        }
+        catVertexList(&listWithSegmentation, numberOfVerticesWithSegmentation, &tmp_list, sizeListVertexToInsert);
+        numberOfVerticesWithSegmentation += sizeListVertexToInsert;
         printf("Run insert vertex\n");
         runInsertVertex(sweep_line);
         printf("Run Segmentation\n");
         traceSegmentationEdges();
         printLinkList(*sweep_line);
 		printf("All vertices:\n");
-		printVertexList(list, numberOfVertices);
-        printDCEL(list, numberOfVertices);
+		printVertexList(listWithSegmentation, numberOfVerticesWithSegmentation);
+        printDCEL(listWithSegmentation, numberOfVerticesWithSegmentation);
         printf("###############################\n");
 	}
 }
@@ -348,8 +362,7 @@ void traceSegmentationEdges(){
             vertex *a = segmentationVertex[i];
             vertex *b = segmentationVertex[i+1];
             if(!vertexConnected(a, b)){
-                face *new_face = createFace();
-                insertEdge(a, b, a->rep->face, new_face);
+                insertEdge(a, b, in);
                 addToList(segmentationEdges, getConnectedEdge(a, b));
             }
             i+=2;
