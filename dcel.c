@@ -33,15 +33,15 @@ vertex **initVertexList(int size){
 	return list;
 }
 
-void changeVertexListSize(vertex **list, int newSize){
-	realloc(list, sizeof(vertex *) * newSize);
+void changeVertexListSize(vertex ***list, int newSize){
+	*list = realloc(*list, sizeof(vertex *) * newSize);
 	return;
 }
 
-void catVertexList(vertex **dest, int destSize, vertex **src, int srcSize){
+void catVertexList(vertex ***dest, int destSize, vertex ***src, int srcSize){
 	changeVertexListSize(dest, destSize+srcSize);
-	memcpy(dest+destSize, src, srcSize);
-	//free(src);
+	memcpy(*dest+destSize, *src, srcSize*sizeof(vertex*));
+	free(*src);
 	return;
 }
 //bubble sort to be replaced with a more eficient one

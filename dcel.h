@@ -28,9 +28,9 @@ vertex *createVertex(int x, int y);
 
 vertex **initVertexList(int size);
 
-void changeVertexListSize(vertex **list, int newSize);
+void changeVertexListSize(vertex ***list, int newSize);
 
-void catVertexList(vertex **dest, int destSize, vertex **src, int srcSize);
+void catVertexList(vertex ***dest, int destSize, vertex ***src, int srcSize);
 
 void sortVertexListX(vertex **list, int size);
 
