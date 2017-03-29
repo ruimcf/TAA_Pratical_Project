@@ -237,6 +237,9 @@ int vertexConnected(vertex* vertex1, vertex* vertex2){
 }
 
 void printDCEL(vertex **list, int size){
+	if(size==0){
+		return;
+	}
 	int xMax,
 	    yMax,
 	    pos;
