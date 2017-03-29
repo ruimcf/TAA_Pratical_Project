@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <linklist.h>
+#include <string.h>
 /*
  * Pseudo code to Horizontal sweep algorithm
  *
@@ -24,6 +25,7 @@ void addInsertVertex(half_edge *edge, vertex *new);
 void runInsertVertex(link_list **sweep_line);
 void horizontalColinearCase(link_list *tmp, vertex *point);
 void updateFaces();
+int getVertexToConsider(vertex ***listToConsider, int i, int direction);
 
 /* Vertex lists */
 vertex** list;
@@ -298,18 +300,27 @@ void horizontalGrid(){
 		printf("Vertices to consider:\n");
 		printVertexList(listToConsider, sizeToConsider);
 		printf("Printing sweep_line list:\n");
-		size_sweep_line_action = runEventSweepLine(sweep_line_action_list, size_sweep_line_action, sweep_line, 1);
-		printf("Run insert vertex\n");
-		runInsertVertex(sweep_line);
-		printf("Run Segmentation\n");
-		traceSegmentationEdges();
-		printLinkList(*sweep_line);
+        size_sweep_line_action = runEventSweepLine(sweep_line_action_list, size_sweep_line_action, sweep_line, 1);
+        /* Insert the new vertex on the dcel */
+        vertex** tmp_list = initVertexList(sizeListVertexToInsert);
+        for(int k = 0; k<sizeListVertexToInsert; k++){
+            tmp_list[k] = listVertexToInsert[k]->new;
+        }
+        catVertexList(&listWithSegmentation, numberOfVerticesWithSegmentation, &tmp_list, sizeListVertexToInsert);
+        numberOfVerticesWithSegmentation += sizeListVertexToInsert;
+        printf("Run insert vertex\n");
+        runInsertVertex(sweep_line);
+        printf("Run Segmentation\n");
+        traceSegmentationEdges();
+        printLinkList(*sweep_line);
 		printf("All vertices:\n");
-		printVertexList(list, numberOfVertices);
-		printDCEL(list, numberOfVertices);
-		printf("###############################\n");
+		printVertexList(listWithSegmentation, numberOfVerticesWithSegmentation);
+        printDCEL(listWithSegmentation, numberOfVerticesWithSegmentation);
+        printf("###############################\n");
 	}
 }
+
+
 void horizontalColinearCase(link_list *tmp, vertex *point){
 	printf("Case Colinear detected\n");
 	int i = 1;
@@ -346,19 +357,18 @@ void traceSegmentationEdges(){
 		/* When Grid Mode, we have to consider the other segmentation edges*/
 		if(option == 2){
 
-		}
-		else if(option == 0){
-			vertex *a = segmentationVertex[i];
-			vertex *b = segmentationVertex[i+1];
-			if(!vertexConnected(a, b)){
-				face *new_face = createFace();
-				insertEdge(a, b, a->rep->face, new_face);
-				addToList(segmentationEdges, getConnectedEdge(a, b));
-			}
-			i+=2;
-		}
-	}
-	sizeSegmentationVertex = 0;
+        }
+        else if(option == 0){
+            vertex *a = segmentationVertex[i];
+            vertex *b = segmentationVertex[i+1];
+            if(!vertexConnected(a, b)){
+                insertEdge(a, b, in);
+                addToList(segmentationEdges, getConnectedEdge(a, b));
+            }
+            i+=2;
+        }
+    }
+    sizeSegmentationVertex = 0;
 }
 
 void printSegmentationVertex(){

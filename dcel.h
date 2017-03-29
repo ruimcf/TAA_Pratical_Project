@@ -40,7 +40,7 @@ void createPolygon(int num, vertex **listCCW, face *in, face *out);
 
 void insertVertex(vertex *v, half_edge *he);
 //keepFace on the left
-void insertEdge(vertex *src, vertex *dest, face *keepFace, face *newFace);
+void insertEdge(vertex *src, vertex *dest, face *keepFace);
 
 void printVertexList(vertex **list, int size);
 
@@ -51,4 +51,6 @@ int vertexConnected(vertex* vertex1, vertex* vertex2);
 half_edge *getConnectedEdge(vertex* vertex1, vertex* vertex2);
 
 half_edge *getUpEdge(vertex* vertex1);
+
+half_edge *getRightEdge(vertex* vertex1);
 

@@ -14,6 +14,19 @@ half_edge * getUpEdge(vertex * vertex1){
     return NULL;
 }
 
+half_edge * getRightEdge(vertex * vertex1){
+	half_edge *tmp = vertex1->rep;
+    do{
+        if(tmp->twin->origin->y == vertex1->y && tmp->twin->origin->x > vertex1->x){
+            return tmp;
+        }
+        tmp=tmp->twin->next;
+    }while(tmp!=vertex1->rep);
+    return NULL;
+}
+
+
+
 face *createFace(){
 	face *f = malloc(sizeof(face));
 	return f;
@@ -159,38 +172,42 @@ void insertVertex(vertex *v, half_edge *he){
 }
 
 void insertEdge(vertex *src, vertex *dest,face *keepFace){
-	half_edge *front=malloc(sizeof(half_edge)),
-		  *back=malloc(sizeof(half_edge)),
-		  *tmp;
+	half_edge *front = malloc(sizeof(half_edge));
+    half_edge *back = malloc(sizeof(half_edge));
+    half_edge *srcIn;
+    half_edge *srcOut;
+    half_edge *destIn;
+    half_edge *destOut;
+	destOut=dest->rep;
+	while(destOut->face!=keepFace){
+		destOut=destOut->twin->next;
+	}
+	srcIn=src->rep->twin;
+	while(srcIn->face!=keepFace){
+		srcIn=srcIn->next->twin;
+	}
+	destIn=dest->rep->twin;
+	while(destIn->face!=keepFace){
+		destIn=destIn->next->twin;
+	}
+	srcOut=src->rep;
+	while(srcOut->face!=keepFace){
+		srcOut=srcOut->twin->next;
+	}
 	front->origin=src;
 	front->twin=back;
 	front->face=keepFace;
 	back->origin=dest;
 	back->twin=front;
 	back->face=keepFace;
-	tmp=dest->rep;
-	while(tmp->face!=keepFace){
-		tmp=tmp->twin->next;
-	}
-	front->next=tmp;
-	tmp->prev=front;
-	tmp=src->rep->twin;
-	while(tmp->face!=keepFace){
-		tmp=tmp->next->twin;
-	}
-	front->prev=tmp;
-	tmp->next=front;
-	tmp=dest->rep->twin;
-	while(tmp->face!=keepFace){
-		tmp=tmp->next->twin;
-	}
-	back->prev=tmp;
-	tmp->next=back;
-	tmp=src->rep;
-	while(tmp->face!=keepFace){
-		tmp=tmp->twin->next;
-	}
-	back->next=tmp;
+	front->next=destOut;
+	destOut->prev=front;
+	front->prev=srcIn;
+	srcIn->next=front;
+	back->prev=destIn;
+	destIn->next=back;
+	back->next=srcOut;
+    srcOut->prev=back;
 	keepFace->rep=front;
 	return;
 }
