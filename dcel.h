@@ -52,3 +52,5 @@ half_edge *getConnectedEdge(vertex* vertex1, vertex* vertex2);
 
 half_edge *getUpEdge(vertex* vertex1);
 
+half_edge *getRightEdge(vertex* vertex1);
+

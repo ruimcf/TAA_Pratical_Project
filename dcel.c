@@ -14,6 +14,19 @@ half_edge * getUpEdge(vertex * vertex1){
     return NULL;
 }
 
+half_edge * getRightEdge(vertex * vertex1){
+	half_edge *tmp = vertex1->rep;
+    do{
+        if(tmp->twin->origin->y == vertex1->y && tmp->twin->origin->x > vertex1->x){
+            return tmp;
+        }
+        tmp=tmp->twin->next;
+    }while(tmp!=vertex1->rep);
+    return NULL;
+}
+
+
+
 face *createFace(){
 	face *f = malloc(sizeof(face));
 	return f;

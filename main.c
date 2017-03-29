@@ -24,6 +24,7 @@ vertex *getVertex(half_edge *edge, int x, int y);
 void addInsertVertex(half_edge *edge, vertex *new);
 void runInsertVertex(link_list **sweep_line);
 void horizontalColinearCase(link_list *tmp, vertex *point);
+int getVertexToConsider(vertex ***listToConsider, int i, int direction);
 
 /* Vertex lists */
 vertex** list;
@@ -121,7 +122,7 @@ int getVertexToConsider(vertex ***listToConsider, int i, int direction){
     if(direction == 0){
         vertexPos = list[i]->y;
     }
-    else{
+    else if(direction == 1){
         vertexPos = list[i]->x;
     }
     int sizeToConsider = 1;
@@ -148,7 +149,7 @@ void horizontalGrid(){
     sortVertexListY(list, numberOfVertices);
 	while(i < numberOfVertices){
 		vertex** listToConsider;
-        int sizeToConsider = getVertexToConsider(&listToConsider, i, option);
+        int sizeToConsider = getVertexToConsider(&listToConsider, i, 0);
         i += sizeToConsider;
         /* For each vertex that we have to consider, we have to find the case that it satisfies */
 		for(int j = 0; j < sizeToConsider; j++){
@@ -321,6 +322,8 @@ void horizontalGrid(){
         printf("###############################\n");
 	}
 }
+
+
 void horizontalColinearCase(link_list *tmp, vertex *point){
     printf("Case Colinear detected\n");
     int i = 1;

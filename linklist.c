@@ -104,6 +104,9 @@ int runEventSweepLine(sweep_line_action ** sweep_line_action_list, int size, lin
             save[save_size]->edge = sweep_line_action_list[i]->edge;
             save_size++;
         }
+        else if(sweep_line_action_list[i]->action == 3){
+            addToListByY(sweep_line, sweep_line_action_list[i]->edge);
+        }
         free(sweep_line_action_list[i]);
     }
     for(int i = 0; i<save_size; i++){
