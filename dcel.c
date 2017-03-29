@@ -158,17 +158,16 @@ void insertVertex(vertex *v, half_edge *he){
 	return;
 }
 
-void insertEdge(vertex *src, vertex *dest,face *keepFace, face *newFace){
+void insertEdge(vertex *src, vertex *dest,face *keepFace){
 	half_edge *front=malloc(sizeof(half_edge)),
 		  *back=malloc(sizeof(half_edge)),
 		  *tmp;
-	newFace=malloc(sizeof(face));
 	front->origin=src;
 	front->twin=back;
 	front->face=keepFace;
 	back->origin=dest;
 	back->twin=front;
-	back->face=newFace;
+	back->face=keepFace;
 	tmp=dest->rep;
 	while(tmp->face!=keepFace){
 		tmp=tmp->twin->next;
@@ -192,13 +191,7 @@ void insertEdge(vertex *src, vertex *dest,face *keepFace, face *newFace){
 		tmp=tmp->twin->next;
 	}
 	back->next=tmp;
-	tmp->prev=back;
-	while(tmp->face==keepFace){
-		tmp->face=newFace;
-		tmp=tmp->next;
-	}
 	keepFace->rep=front;
-	newFace->rep=back;
 	return;
 }
 
