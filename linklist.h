@@ -7,8 +7,8 @@ typedef struct s_link_list{
 } link_list;
 
 typedef struct s_sweep_line_action{
-    int action;
-    half_edge *edge;
+	int action;
+	half_edge *edge;
 } sweep_line_action;
 
 

@@ -5,24 +5,24 @@
 
 half_edge * getUpEdge(vertex * vertex1){
 	half_edge *tmp = vertex1->rep;
-    do{
-        if(tmp->twin->origin->x == vertex1->x && tmp->twin->origin->y > vertex1->y){
-            return tmp;
-        }
-        tmp=tmp->twin->next;
-    }while(tmp!=vertex1->rep);
-    return NULL;
+	do{
+		if(tmp->twin->origin->x == vertex1->x && tmp->twin->origin->y > vertex1->y){
+			return tmp;
+		}
+		tmp=tmp->twin->next;
+	}while(tmp!=vertex1->rep);
+	return NULL;
 }
 
 half_edge * getRightEdge(vertex * vertex1){
 	half_edge *tmp = vertex1->rep;
-    do{
-        if(tmp->twin->origin->y == vertex1->y && tmp->twin->origin->x > vertex1->x){
-            return tmp;
-        }
-        tmp=tmp->twin->next;
-    }while(tmp!=vertex1->rep);
-    return NULL;
+	do{
+		if(tmp->twin->origin->y == vertex1->y && tmp->twin->origin->x > vertex1->x){
+			return tmp;
+		}
+		tmp=tmp->twin->next;
+	}while(tmp!=vertex1->rep);
+	return NULL;
 }
 
 
@@ -129,7 +129,7 @@ void createPolygon(int num, vertex **listCCW, face *in, face *out){
 }
 
 void insertVertex(vertex *v, half_edge *he){
-    printf("inserting vertex\n");
+	printf("inserting vertex\n");
 	half_edge *out1 = malloc(sizeof(half_edge)),
 		  *out2 = malloc(sizeof(half_edge)),
 		  *in1 = malloc(sizeof(half_edge)),
@@ -173,11 +173,11 @@ void insertVertex(vertex *v, half_edge *he){
 
 void insertEdge(vertex *src, vertex *dest,face *keepFace){
 	half_edge *front = malloc(sizeof(half_edge));
-    half_edge *back = malloc(sizeof(half_edge));
-    half_edge *srcIn;
-    half_edge *srcOut;
-    half_edge *destIn;
-    half_edge *destOut;
+	half_edge *back = malloc(sizeof(half_edge));
+	half_edge *srcIn;
+	half_edge *srcOut;
+	half_edge *destIn;
+	half_edge *destOut;
 	destOut=dest->rep;
 	while(destOut->face!=keepFace){
 		destOut=destOut->twin->next;
@@ -207,7 +207,7 @@ void insertEdge(vertex *src, vertex *dest,face *keepFace){
 	back->prev=destIn;
 	destIn->next=back;
 	back->next=srcOut;
-    srcOut->prev=back;
+	srcOut->prev=back;
 	keepFace->rep=front;
 	return;
 }
@@ -227,13 +227,13 @@ void printVertexList(vertex **list, int size){
 
 int vertexConnected(vertex* vertex1, vertex* vertex2){
 	half_edge *tmp = vertex1->rep;
-    do{
-        if(tmp->twin->origin->x == vertex2->x && tmp->twin->origin->y == vertex2->y){
-            return 1;
-        }
-        tmp=tmp->twin->next;
-    }while(tmp!=vertex1->rep);
-    return 0;
+	do{
+		if(tmp->twin->origin->x == vertex2->x && tmp->twin->origin->y == vertex2->y){
+			return 1;
+		}
+		tmp=tmp->twin->next;
+	}while(tmp!=vertex1->rep);
+	return 0;
 }
 
 void printDCEL(vertex **list, int size){
@@ -241,8 +241,8 @@ void printDCEL(vertex **list, int size){
 		return;
 	}
 	int xMax,
-	    yMax,
-	    pos;
+		yMax,
+		pos;
 	xMax = list[0]->x;
 	yMax = list[0]->y;
 	for(int i=1; i<size; i++){
@@ -266,7 +266,7 @@ void printDCEL(vertex **list, int size){
 			if(connect->x == list[i]->x){
 				if(connect->y > list[i]->y){
 					int up=connect->y,
-					    down=list[i]->y;
+						down=list[i]->y;
 					for(int e=down+1; e<down+(up-down-1)/2; e++){
 						screen[connect->x + e*xMax]='|';
 					}
@@ -274,7 +274,7 @@ void printDCEL(vertex **list, int size){
 				}
 				else{
 					int up=list[i]->y,
-					    down=connect->y;
+						down=connect->y;
 					for(int e=up-1; e>up-(up-down-1)/2; e--){
 						screen[connect->x + e*xMax]='|';
 					}
@@ -284,7 +284,7 @@ void printDCEL(vertex **list, int size){
 			else if(connect->y == list[i]->y){
 				if(connect->x > list[i]->x){
 					int right=connect->x,
-					    left=list[i]->x;
+						left=list[i]->x;
 					for(int e=left+1; e<left+(right-left-1)/2; e++){
 						screen[e + connect->y*xMax]='-';
 					}
@@ -292,7 +292,7 @@ void printDCEL(vertex **list, int size){
 				}
 				else{
 					int right=list[i]->x,
-					    left=connect->x;
+						left=connect->x;
 					for(int e=right-1; e>left-(left-right-1)/2; e--){
 						screen[e + connect->y*xMax]='-';
 					}
@@ -314,12 +314,12 @@ void printDCEL(vertex **list, int size){
 
 half_edge *getConnectedEdge(vertex* vertex1, vertex* vertex2){
 	half_edge *tmp = vertex1->rep;
-    do{
-        if(tmp->twin->origin->x == vertex2->x && tmp->twin->origin->y == vertex2->y){
-            return tmp;
-        }
-        tmp=tmp->twin->next;
-    }while(tmp!=vertex1->rep);
-    return NULL;
+	do{
+		if(tmp->twin->origin->x == vertex2->x && tmp->twin->origin->y == vertex2->y){
+			return tmp;
+		}
+		tmp=tmp->twin->next;
+	}while(tmp!=vertex1->rep);
+	return NULL;
 }
 

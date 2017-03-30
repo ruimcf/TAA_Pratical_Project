@@ -4,10 +4,10 @@
 
 void addToList(link_list **head, half_edge *item){
 	link_list *add = malloc(sizeof(link_list));
-    add->item = item;
-    add->next = *head;
-    *head = add;
-    return;
+	add->item = item;
+	add->next = *head;
+	*head = add;
+	return;
 }
 
 void addToListByX(link_list **head, half_edge *item){
@@ -78,11 +78,11 @@ void rmFromList(link_list **head, half_edge *item){
 }
 
 int addEventSweepLine(sweep_line_action ** sweep_line_action_list, int size, int action, half_edge *edge){
-    sweep_line_action * new = malloc(sizeof(sweep_line_action));
-    new->action = action;
-    new->edge = edge;
-    sweep_line_action_list[size] = new;
-    return size+1;
+	sweep_line_action * new = malloc(sizeof(sweep_line_action));
+	new->action = action;
+	new->edge = edge;
+	sweep_line_action_list[size] = new;
+	return size+1;
 }
 
 int runEventSweepLine(sweep_line_action ** sweep_line_action_list, int size, link_list ** sweep_line){

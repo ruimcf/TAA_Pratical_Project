@@ -88,88 +88,88 @@ int input(){
 			listHole[j]=createVertex(vertexX, vertexY);
 		}
 		createPolygon(numberOfVerticesHole, listHole, in, out);
-        printVertexList(listHole, numberOfVerticesHole);
+		printVertexList(listHole, numberOfVerticesHole);
 		catVertexList(&list, numberOfVertices, &listHole, numberOfVerticesHole);
 		numberOfVertices+=numberOfVerticesHole;
 	}
-    printVertexList(list, numberOfVertices);
+	printVertexList(list, numberOfVertices);
 	printDCEL(list, numberOfVertices);
 	return numberOfVertices;
 }
 
 void initStructures(){
-    /* Init Sweep Line */
+	/* Init Sweep Line */
 	sweep_line = malloc(sizeof(link_list*));
 	(*sweep_line) = NULL;
-    /* Init Sweep Line Action List */
+	/* Init Sweep Line Action List */
 	sweep_line_action_list = malloc(sizeof(sweep_line_action*)*numberOfVertices);
-    size_sweep_line_action = 0;
-    /* Init Segmentation Vertex list */
-    segmentationVertex = malloc(sizeof(vertex*)*numberOfVertices);
-    sizeSegmentationVertex = 0;
-    /* Init Vertex need to be Inserted list */
-    listVertexToInsert = malloc(sizeof(structInsertVertex*)*numberOfVertices);
-    sizeListVertexToInsert = 0;
-    /* Init Segmentation Edges List */
-    segmentationEdges = malloc(sizeof(link_list*));
-    /* Init List With segmentation */
-    listWithSegmentation = initVertexList(numberOfVertices);
-    memcpy(listWithSegmentation, list, sizeof(vertex*)*numberOfVertices);
-    numberOfVerticesWithSegmentation = numberOfVertices;
-    printf("List with segmentaion\n");
-    printVertexList(listWithSegmentation, numberOfVerticesWithSegmentation);
+	size_sweep_line_action = 0;
+	/* Init Segmentation Vertex list */
+	segmentationVertex = malloc(sizeof(vertex*)*numberOfVertices);
+	sizeSegmentationVertex = 0;
+	/* Init Vertex need to be Inserted list */
+	listVertexToInsert = malloc(sizeof(structInsertVertex*)*numberOfVertices);
+	sizeListVertexToInsert = 0;
+	/* Init Segmentation Edges List */
+	segmentationEdges = malloc(sizeof(link_list*));
+	/* Init List With segmentation */
+	listWithSegmentation = initVertexList(numberOfVertices);
+	memcpy(listWithSegmentation, list, sizeof(vertex*)*numberOfVertices);
+	numberOfVerticesWithSegmentation = numberOfVertices;
+	printf("List with segmentaion\n");
+	printVertexList(listWithSegmentation, numberOfVerticesWithSegmentation);
 }
 
 int getVertexToConsider(vertex ***listToConsider, int i, int direction){
-    int vertexPos;
-    if(direction == 0){
-        vertexPos = list[i]->y;
-    }
-    else if(direction == 1){
-        vertexPos = list[i]->x;
-    }
-    int sizeToConsider = 1;
-    while(i+sizeToConsider < numberOfVertices){
-        if(direction == 0 && list[i+sizeToConsider]->y == vertexPos){
-            sizeToConsider++;
-        }
-        else if(direction == 1 && list[i+sizeToConsider]->x == vertexPos){
-            sizeToConsider++;
-        }
-        else
-            break;
-    }
-    *listToConsider = initVertexList(sizeToConsider);
-    for(int j = 0; j < sizeToConsider; j++){
-        (*listToConsider)[j] = list[i+j];
-    }
-    return sizeToConsider;
+	int vertexPos;
+	if(direction == 0){
+		vertexPos = list[i]->y;
+	}
+	else if(direction == 1){
+		vertexPos = list[i]->x;
+	}
+	int sizeToConsider = 1;
+	while(i+sizeToConsider < numberOfVertices){
+		if(direction == 0 && list[i+sizeToConsider]->y == vertexPos){
+			sizeToConsider++;
+		}
+		else if(direction == 1 && list[i+sizeToConsider]->x == vertexPos){
+			sizeToConsider++;
+		}
+		else
+			break;
+	}
+	*listToConsider = initVertexList(sizeToConsider);
+	for(int j = 0; j < sizeToConsider; j++){
+		(*listToConsider)[j] = list[i+j];
+	}
+	return sizeToConsider;
 }
 
 void horizontalGrid(){
 	int i = 0;
-    initStructures();
-    sortVertexListY(list, numberOfVertices);
+	initStructures();
+	sortVertexListY(list, numberOfVertices);
 	while(i < numberOfVertices){
 		vertex** listToConsider;
-        int sizeToConsider = getVertexToConsider(&listToConsider, i, 0);
-        i += sizeToConsider;
-        /* For each vertex that we have to consider, we have to find the case that it satisfies */
+		int sizeToConsider = getVertexToConsider(&listToConsider, i, 0);
+		i += sizeToConsider;
+		/* For each vertex that we have to consider, we have to find the case that it satisfies */
 		for(int j = 0; j < sizeToConsider; j++){
 			link_list *tmp = *sweep_line;
-            /* If the vertex forms an horizontal edge with another */
+			/* If the vertex forms an horizontal edge with another */
 			if(j > 0 && vertexConnected(listToConsider[j-1], listToConsider[j])){
-                /* If next vertex are colinear, we must treat all as one edge */
-                int numberOfColinearVertex = 0;
-                while(j < sizeToConsider-1){
-                    if(vertexConnected(listToConsider[j], listToConsider[j+1])){
-                        j++;
-                        numberOfColinearVertex++;
-                    }
-                    else
-                        break;
-                }
-                vertex *a = listToConsider[j-1-numberOfColinearVertex];
+				/* If next vertex are colinear, we must treat all as one edge */
+				int numberOfColinearVertex = 0;
+				while(j < sizeToConsider-1){
+					if(vertexConnected(listToConsider[j], listToConsider[j+1])){
+						j++;
+						numberOfColinearVertex++;
+					}
+					else
+						break;
+				}
+				vertex *a = listToConsider[j-1-numberOfColinearVertex];
 				vertex *b = listToConsider[j];
 				/* Case 9:
 				 * When we can insert a new segment and there is no segmentation */
@@ -190,7 +190,7 @@ void horizontalGrid(){
 					/* Case 1:
 					 * When the new segment is in between a segment in the sweep line. */
 					else if((a->x > tmp->item->origin->x) && (b->x < tmp->next->item->origin->x)){
-                        printf("Case 1 detected\n");
+						printf("Case 1 detected\n");
 						addSegmentationVertex(getVertex(tmp->item, tmp->item->origin->x, a->y));
                         addSegmentationVertex(a);
                         addSegmentationVertex(b);
@@ -225,7 +225,7 @@ void horizontalGrid(){
 						/* Case 3:
 						 * When the segment is connected with its left side to the sweep line. */
 						if((a->x == tmp->next->item->origin->x) && (b->x < tmp->next->next->item->origin->x)){
-                            printf("Case 3 detected\n");
+							printf("Case 3 detected\n");
 							addSegmentationVertex(getVertex(tmp->item, tmp->item->origin->x, a->y));
                             addSegmentationVertex(a);
 							addToListByX(sweep_line, getUpEdge(b));
@@ -258,7 +258,7 @@ void horizontalGrid(){
 					/* Case 7:
 					 * When inside sweep line, connected at right */
 					else if((a->x > tmp->item->origin->x) && (b->x == tmp->next->item->origin->x)){
-                        printf("Case 7 detected\n");
+						printf("Case 7 detected\n");
 						addSegmentationVertex(getVertex(tmp->item, tmp->item->origin->x, a->y));
                         addSegmentationVertex(a);
 						rmFromList(sweep_line, tmp->next->item);
@@ -275,7 +275,7 @@ void horizontalGrid(){
 					}
 					else{
 						tmp = tmp->next->next;
-                        /* When the segment is outside of any of the sweep line, no segmentation */
+						/* When the segment is outside of any of the sweep line, no segmentation */
 						if(tmp == NULL){
                             printf("Case After is NULL detected\n");
 							addToListByX(sweep_line, getUpEdge(a));
@@ -286,21 +286,21 @@ void horizontalGrid(){
 				}	   
 			}
 			/* When vertical colinear point */
-            /* If its the only point on the same line, it's a colinear point */
+			/* If its the only point on the same line, it's a colinear point */
 			else if(sizeToConsider == 1){
-                horizontalColinearCase(tmp, listToConsider[j]);
+				horizontalColinearCase(tmp, listToConsider[j]);
 			}
-            /* If it's the first one and not connected to the next, it's a colinear point */
+			/* If it's the first one and not connected to the next, it's a colinear point */
 			else if((j == 0) && !vertexConnected(listToConsider[j], listToConsider[j+1])){
-                horizontalColinearCase(tmp, listToConsider[j]);
+				horizontalColinearCase(tmp, listToConsider[j]);
 			}
-            /* if its a middle vertex and not connected to any of its neighbours */
+			/* if its a middle vertex and not connected to any of its neighbours */
 			else if((j > 0) && (j < sizeToConsider-1) && !vertexConnected(listToConsider[j], listToConsider[j+1]) && !vertexConnected(listToConsider[j], listToConsider[j-1])){
-                horizontalColinearCase(tmp, listToConsider[j]);
+				horizontalColinearCase(tmp, listToConsider[j]);
 			}
-            /* if its the last vertex and not connected to the previous */
+			/* if its the last vertex and not connected to the previous */
 			else if((j == sizeToConsider-1) && !vertexConnected(listToConsider[j], listToConsider[j-1])){
-                horizontalColinearCase(tmp, listToConsider[j]);
+				horizontalColinearCase(tmp, listToConsider[j]);
 			}
 	    }
 
@@ -322,8 +322,8 @@ void horizontalGrid(){
         traceSegmentationEdges();
 		printf("All vertices:\n");
 		printVertexList(listWithSegmentation, numberOfVerticesWithSegmentation);
-        printDCEL(listWithSegmentation, numberOfVerticesWithSegmentation);
-        printf("###############################\n");
+		printDCEL(listWithSegmentation, numberOfVerticesWithSegmentation);
+		printf("###############################\n");
 	}
 }
 
@@ -351,78 +351,76 @@ void horizontalColinearCase(link_list *tmp, vertex *point){
     }
 	rmFromList(sweep_line, tmp->item);
 	addToListByX(sweep_line, getUpEdge(point));
-    /* size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 1, tmp->item); */
-    /* size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 0, getUpEdge(point)); */
 }
 
 void addSegmentationVertex(vertex* a){
-    segmentationVertex[sizeSegmentationVertex] = a;
-    sizeSegmentationVertex++;
+	segmentationVertex[sizeSegmentationVertex] = a;
+	sizeSegmentationVertex++;
 }
 
 void traceSegmentationEdges(){
-    int i = 0;
-    while(i < sizeSegmentationVertex){
-        /* When Grid Mode, we have to consider the other segmentation edges*/
-        if(option == 2){
+	int i = 0;
+	while(i < sizeSegmentationVertex){
+		/* When Grid Mode, we have to consider the other segmentation edges*/
+		if(option == 2){
 
-        }
-        else if(option == 0){
-            vertex *a = segmentationVertex[i];
-            vertex *b = segmentationVertex[i+1];
-            if(!vertexConnected(a, b)){
-                insertEdge(a, b, in);
-                addToList(segmentationEdges, getConnectedEdge(a, b));
-            }
-            i+=2;
-        }
-    }
-    sizeSegmentationVertex = 0;
+		}
+		else if(option == 0){
+			vertex *a = segmentationVertex[i];
+			vertex *b = segmentationVertex[i+1];
+			if(!vertexConnected(a, b)){
+				insertEdge(a, b, in);
+				addToList(segmentationEdges, getConnectedEdge(a, b));
+			}
+			i+=2;
+		}
+	}
+	sizeSegmentationVertex = 0;
 }
 
 void printSegmentationVertex(){
-    printf("Segmentation vertex list:\n");
-    for(int i = 0; i<sizeSegmentationVertex; i++){
-        printf("Vertex (%d, %d)\n", segmentationVertex[i]->x, segmentationVertex[i]->y);
-    }
-    printf("------------------\n");
+	printf("Segmentation vertex list:\n");
+	for(int i = 0; i<sizeSegmentationVertex; i++){
+		printf("Vertex (%d, %d)\n", segmentationVertex[i]->x, segmentationVertex[i]->y);
+	}
+	printf("------------------\n");
 }
 
 vertex *getVertex(half_edge* edge, int x, int y){
-    if(edge->origin->x == x && edge->origin->y == y){
-        return edge->origin;
-    }
-    else if(edge->twin->origin->x == x && edge->twin->origin->y == y){
-        return edge->twin->origin;
-    }
-    else{
-        vertex *new = createVertex(x, y);
-        addInsertVertex(edge, new);
-        return new;
-    }
+	if(edge->origin->x == x && edge->origin->y == y){
+		return edge->origin;
+	}
+	else if(edge->twin->origin->x == x && edge->twin->origin->y == y){
+		return edge->twin->origin;
+	}
+	else{
+		vertex *new = createVertex(x, y);
+		addInsertVertex(edge, new);
+		return new;
+	}
 }
 
 void addInsertVertex(half_edge *edge, vertex *new){
-    structInsertVertex * add = malloc(sizeof(structInsertVertex));
-    add->edge = edge;
-    add->new = new;
-    listVertexToInsert[sizeListVertexToInsert] = add;
-    sizeListVertexToInsert++;
+	structInsertVertex * add = malloc(sizeof(structInsertVertex));
+	add->edge = edge;
+	add->new = new;
+	listVertexToInsert[sizeListVertexToInsert] = add;
+	sizeListVertexToInsert++;
 }
 
 void runInsertVertex(link_list **sweep_line){
-    for(int i = 0; i < sizeListVertexToInsert; i++){
-        rmFromList(sweep_line, listVertexToInsert[i]->edge);
-        if(listVertexToInsert[i]->edge->face == out){
-            insertVertex(listVertexToInsert[i]->new, listVertexToInsert[i]->edge->twin);
-        }
-        else{
-            insertVertex(listVertexToInsert[i]->new, listVertexToInsert[i]->edge);
-        }
-        addToListByX(sweep_line, getUpEdge(listVertexToInsert[i]->new));
-        free(listVertexToInsert[i]);
-    }
-    sizeListVertexToInsert = 0;
+	for(int i = 0; i < sizeListVertexToInsert; i++){
+		rmFromList(sweep_line, listVertexToInsert[i]->edge);
+		if(listVertexToInsert[i]->edge->face == out){
+			insertVertex(listVertexToInsert[i]->new, listVertexToInsert[i]->edge->twin);
+		}
+		else{
+			insertVertex(listVertexToInsert[i]->new, listVertexToInsert[i]->edge);
+		}
+		addToListByX(sweep_line, getUpEdge(listVertexToInsert[i]->new));
+		free(listVertexToInsert[i]);
+	}
+	sizeListVertexToInsert = 0;
 }
 
 void updateFaces(){
@@ -433,6 +431,11 @@ void updateFaces(){
 		he=listWithSegmentation[i]->rep;
 		do{
 			addToList(&heList, he);
+			printf("(%d,%d)->(%d,%d)\n",
+					he->origin->x,
+					he->origin->y,
+					he->twin->origin->x,
+					he->twin->origin->y);
 			he=he->twin->next;
 		} while(he!=listWithSegmentation[i]->rep);
 	}
@@ -446,9 +449,11 @@ void updateFaces(){
 			tmp->rep=he;
 			printf("face:\n");
 			while(he->face!=tmp){
-				printf("(%d,%d)\n",
+				printf("(%d,%d)->(%d,%d)\n",
 						he->origin->x,
-						he->origin->y);
+						he->origin->y,
+						he->twin->origin->x,
+						he->twin->origin->y);
 				he->face=tmp;
 				rmFromList(&heList, he);
 				he=he->next;
