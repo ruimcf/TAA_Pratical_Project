@@ -18,8 +18,8 @@ typedef struct face{
 } face;
 
 typedef struct s_structInsertVertex{
-    half_edge *edge;
-    vertex *new;
+	half_edge *edge;
+	vertex *new;
 } structInsertVertex;
 
 face *createFace();
