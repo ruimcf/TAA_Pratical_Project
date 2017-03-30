@@ -25,6 +25,6 @@ void printLinkList(link_list *head);
 
 int addEventSweepLine(sweep_line_action ** sweep_line_action_list, int size, int action, half_edge *edge);
 
-int runEventSweepLine(sweep_line_action ** sweep_line_action_list, int size, link_list ** sweep_line, int to_remove_2);
+int runEventSweepLine(sweep_line_action ** sweep_line_action_list, int size, link_list ** sweep_line);
 
 #endif /* LINKLIST_H */
