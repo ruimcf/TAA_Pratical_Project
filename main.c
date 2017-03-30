@@ -174,17 +174,17 @@ void horizontalGrid(){
 				/* Case 9:
 				 * When we can insert a new segment and there is no segmentation */
 				if(tmp == NULL){
-					printf("Case NULL detected\n");
-					size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 0, getUpEdge(a));
-					size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 0, getUpEdge(b));
-				}
+                    printf("Case NULL detected\n");
+					addToListByX(sweep_line, getUpEdge(a));
+					addToListByX(sweep_line, getUpEdge(b));
+                }
 				while(tmp != NULL){
 					/* Case 5:
 					 * When we can insert a new segment and there is no segmentation */
 					if(b->x < tmp->item->origin->x){
-						printf("Case 5 detected\n");
-						size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 0, getUpEdge(a));
-						size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 0, getUpEdge(b));
+                        printf("Case 5 detected\n");
+						addToListByX(sweep_line, getUpEdge(a));
+						addToListByX(sweep_line, getUpEdge(b));
 						break;
 					}
 					/* Case 1:
@@ -192,65 +192,67 @@ void horizontalGrid(){
 					else if((a->x > tmp->item->origin->x) && (b->x < tmp->next->item->origin->x)){
 						printf("Case 1 detected\n");
 						addSegmentationVertex(getVertex(tmp->item, tmp->item->origin->x, a->y));
-						addSegmentationVertex(a);
-						addSegmentationVertex(b);
-						addSegmentationVertex(getVertex(tmp->next->item, tmp->next->item->origin->x, b->y));
-						size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 0, getUpEdge(a));
-						size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 0, getUpEdge(b));
+                        addSegmentationVertex(a);
+                        addSegmentationVertex(b);
+                        addSegmentationVertex(getVertex(tmp->next->item, tmp->next->item->origin->x, b->y));
+						addToListByX(sweep_line, getUpEdge(a));
+						addToListByX(sweep_line, getUpEdge(b));
 						break;
 					}
 					/* Case 2:
 					 * When the new segment is connected with its right side to sweep line. */
 					else if((a->x < tmp->item->origin->x) && (b->x == tmp->item->origin->x)){
-						printf("Case 2 detected\n");
-						addSegmentationVertex(b);
-						addSegmentationVertex(getVertex(tmp->next->item, tmp->next->item->origin->x, b->y));
-						size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 0, getUpEdge(a));
-						size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 1, tmp->item);
+                        printf("Case 2 detected\n");
+                        addSegmentationVertex(b);
+                        addSegmentationVertex(getVertex(tmp->next->item, tmp->next->item->origin->x, b->y));
+                        size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 0, getUpEdge(a));
+                        size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 1, tmp->item);
+						printf("Sweepline\n");
+						printLinkList(*sweep_line);
 						break;
 					}
-					/* Case 3:
-					 * When the segment is connected with its left side to the sweep line. */
-					if((tmp->next->next == NULL) && (a->x == tmp->next->item->origin->x)){
-						printf("Case 3 detected\n");
-						addSegmentationVertex(getVertex(tmp->item, tmp->item->origin->x, a->y));
-						addSegmentationVertex(a);
-						size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 0, getUpEdge(b));
-						size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 1, tmp->next->item);
-						break;
-					}
+                    /* Case 3:
+                     * When the segment is connected with its left side to the sweep line. */
+                    if((tmp->next->next == NULL) && (a->x == tmp->next->item->origin->x)){
+                        printf("Case 3 detected\n");
+                        addSegmentationVertex(getVertex(tmp->item, tmp->item->origin->x, a->y));
+                        addSegmentationVertex(a);
+						addToListByX(sweep_line, getUpEdge(b));
+						rmFromList(sweep_line, tmp->next->item);
+                        break;
+                    }
 					else if(tmp->next->next != NULL){
 						/* Case 3:
 						 * When the segment is connected with its left side to the sweep line. */
 						if((a->x == tmp->next->item->origin->x) && (b->x < tmp->next->next->item->origin->x)){
 							printf("Case 3 detected\n");
 							addSegmentationVertex(getVertex(tmp->item, tmp->item->origin->x, a->y));
-							addSegmentationVertex(a);
-							size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 0, getUpEdge(b));
-							size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 1, tmp->next->item);
+                            addSegmentationVertex(a);
+							addToListByX(sweep_line, getUpEdge(b));
+							rmFromList(sweep_line, tmp->next->item);
 							break;
 						}
 						/* Case 4:
 						 * When the segment is connected both sides with the sweep line. */
 						else if((a->x == tmp->next->item->origin->x) && (b->x == tmp->next->next->item->origin->x)){
-							printf("Case 4 detected\n");
-							addSegmentationVertex(getVertex(tmp->item, tmp->item->origin->x, a->y));
-							addSegmentationVertex(a);
-							addSegmentationVertex(b);
-							addSegmentationVertex(getVertex(tmp->next->next->next->item, tmp->next->next->next->item->origin->x, b->y));
-							size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 2, tmp->next->next->item);
-							size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 2, tmp->next->item);
+                            printf("Case 4 detected\n");
+                            addSegmentationVertex(getVertex(tmp->item, tmp->item->origin->x, a->y));
+                            addSegmentationVertex(a);
+                            addSegmentationVertex(b);
+                            addSegmentationVertex(getVertex(tmp->next->next->next->item, tmp->next->next->next->item->origin->x, b->y));
+                            size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 1, tmp->next->next->item);
+                            size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 1, tmp->next->item);
 							break;
 						}
 					} 
 					/* Case 6:
 					 * When inside sweep line, connected at left */
 					if((a->x == tmp->item->origin->x) && (b->x < tmp->next->item->origin->x)){
-						printf("Case 6 detected\n");
-						addSegmentationVertex(b);
-						addSegmentationVertex(getVertex(tmp->next->item, tmp->next->item->origin->x, b->y));
-						size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 1, tmp->item);
-						size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 0, getUpEdge(b));
+                        printf("Case 6 detected\n");
+                        addSegmentationVertex(b);
+                        addSegmentationVertex(getVertex(tmp->next->item, tmp->next->item->origin->x, b->y));
+						rmFromList(sweep_line, tmp->item);
+						addToListByX(sweep_line, getUpEdge(b));
 						break;
 					}
 					/* Case 7:
@@ -258,26 +260,26 @@ void horizontalGrid(){
 					else if((a->x > tmp->item->origin->x) && (b->x == tmp->next->item->origin->x)){
 						printf("Case 7 detected\n");
 						addSegmentationVertex(getVertex(tmp->item, tmp->item->origin->x, a->y));
-						addSegmentationVertex(a);
-						size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 0, getUpEdge(a));
-						size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 1, tmp->next->item);
+                        addSegmentationVertex(a);
+						rmFromList(sweep_line, tmp->next->item);
+						addToListByX(sweep_line, getUpEdge(a));
 						break;
 					}
 					/* Case 8:
 					 * when inside sweep line, connected at both sides, no segmentation */
 					else if((a->x == tmp->item->origin->x) && (b->x == tmp->next->item->origin->x)){
-						printf("Case 8 detected\n");
-						size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 1, tmp->next->item);
-						size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 1, tmp->item);
+                        printf("Case 8 detected\n");
+						rmFromList(sweep_line, tmp->next->item);
+						rmFromList(sweep_line, tmp->item);
 						break;
 					}
 					else{
 						tmp = tmp->next->next;
 						/* When the segment is outside of any of the sweep line, no segmentation */
 						if(tmp == NULL){
-							printf("Case After is NULL detected\n");
-							size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 0, getUpEdge(a));
-							size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 0, getUpEdge(b));
+                            printf("Case After is NULL detected\n");
+							addToListByX(sweep_line, getUpEdge(a));
+							addToListByX(sweep_line, getUpEdge(b));
 							break;
 						}
 					}
@@ -300,25 +302,24 @@ void horizontalGrid(){
 			else if((j == sizeToConsider-1) && !vertexConnected(listToConsider[j], listToConsider[j-1])){
 				horizontalColinearCase(tmp, listToConsider[j]);
 			}
-			size_sweep_line_action = runEventSweepLine(sweep_line_action_list, size_sweep_line_action, sweep_line, 0);
-		}
+	    }
 
 		printf("Vertices to consider:\n");
 		printVertexList(listToConsider, sizeToConsider);
 		printf("Printing sweep_line list:\n");
-		size_sweep_line_action = runEventSweepLine(sweep_line_action_list, size_sweep_line_action, sweep_line, 1);
-		/* Insert the new vertex on the dcel */
-		vertex** tmp_list = initVertexList(sizeListVertexToInsert);
-		for(int k = 0; k<sizeListVertexToInsert; k++){
-			tmp_list[k] = listVertexToInsert[k]->new;
-		}
-		catVertexList(&listWithSegmentation, numberOfVerticesWithSegmentation, &tmp_list, sizeListVertexToInsert);
-		numberOfVerticesWithSegmentation += sizeListVertexToInsert;
-		printf("Run insert vertex\n");
-		runInsertVertex(sweep_line);
-		printf("Run Segmentation\n");
-		traceSegmentationEdges();
-		printLinkList(*sweep_line);
+        size_sweep_line_action = runEventSweepLine(sweep_line_action_list, size_sweep_line_action, sweep_line);
+        printLinkList(*sweep_line);
+        /* Insert the new vertex on the dcel */
+        vertex** tmp_list = initVertexList(sizeListVertexToInsert);
+        for(int k = 0; k<sizeListVertexToInsert; k++){
+            tmp_list[k] = listVertexToInsert[k]->new;
+        }
+        catVertexList(&listWithSegmentation, numberOfVerticesWithSegmentation, &tmp_list, sizeListVertexToInsert);
+        numberOfVerticesWithSegmentation += sizeListVertexToInsert;
+        printf("Run insert vertex\n");
+        runInsertVertex(sweep_line);
+        printf("Run Segmentation\n");
+        traceSegmentationEdges();
 		printf("All vertices:\n");
 		printVertexList(listWithSegmentation, numberOfVerticesWithSegmentation);
 		printDCEL(listWithSegmentation, numberOfVerticesWithSegmentation);
@@ -328,28 +329,28 @@ void horizontalGrid(){
 
 
 void horizontalColinearCase(link_list *tmp, vertex *point){
-	printf("Case Colinear detected\n");
-	int i = 1;
-	/* Dest is the destination of the colinear point segmentation trace */
-	half_edge *dest = tmp->next->item;
-	while(tmp->item->origin->x != point->x){
-		if(i % 2 == 1)
-			dest = tmp->item;
-		else
-			dest = tmp->next->next->item;
-		tmp = tmp->next;
-		i++;
-	}
-	if(dest->origin->x < point->x){
-		addSegmentationVertex(getVertex(dest, dest->origin->x, point->y));
-		addSegmentationVertex(point);
-	}
-	else{
-		addSegmentationVertex(point);
-		addSegmentationVertex(getVertex(dest, dest->origin->x, point->y));
-	}
-	size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 1, tmp->item);
-	size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 0, getUpEdge(point));
+    printf("Case Colinear detected\n");
+    int i = 1;
+    /* Dest is the destination of the colinear point segmentation trace */
+    half_edge *dest = tmp->next->item;
+    while(tmp->item->origin->x != point->x){
+        if(i % 2 == 1)
+            dest = tmp->item;
+        else
+            dest = tmp->next->next->item;
+        tmp = tmp->next;
+        i++;
+    }
+    if(dest->origin->x < point->x){
+        addSegmentationVertex(getVertex(dest, dest->origin->x, point->y));
+        addSegmentationVertex(point);
+    }
+    else{
+        addSegmentationVertex(point);
+        addSegmentationVertex(getVertex(dest, dest->origin->x, point->y));
+    }
+	rmFromList(sweep_line, tmp->item);
+	addToListByX(sweep_line, getUpEdge(point));
 }
 
 void addSegmentationVertex(vertex* a){
