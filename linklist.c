@@ -49,6 +49,9 @@ void addToListByX(link_list **head, half_edge *item){
 }
 
 void addToListByY(link_list **head, half_edge *item){
+	if(item==NULL){
+		return;
+	}
 	link_list **ptr=head,
 		  *add=malloc(sizeof(link_list));
 	add->item=item;
@@ -60,6 +63,22 @@ void addToListByY(link_list **head, half_edge *item){
 	add->next=*ptr;
 	*ptr=add;
 	return;
+}
+
+half_edge *getBeforeY(link_list *head, int y){
+	link_list *ptr=head;
+	while(ptr->next->item->origin->y < y){
+		ptr=ptr->next;
+	}
+	return ptr->item;
+}
+
+half_edge *getAfterY(link_list *head, int y){
+	link_list *ptr=head;
+	while(ptr->item->origin->y <= y){
+		ptr=ptr->next;
+	}
+	return ptr->item;
 }
 
 
