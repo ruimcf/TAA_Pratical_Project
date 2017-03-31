@@ -494,18 +494,20 @@ face *faceDown(vertex *v){
 	}
 }
 
-void traceUp(vertex *v, link_list **edgeList){
+int traceUp(vertex *v, link_list **edgeList){
+	int counter=0;
 	if(getUpEdge(v)!=NULL){
-		return;
+		return counter;
 	}
 	face *f = faceUp(v);
 	if(f==out){
-		return;
+		return counter;
 	}
 	half_edge *destHedge=getAfterY(*edgeList, v->y);
 	if(destHedge->twin->origin->x == v->x){
 		insertEdgeUpdateFace(v, destHedge->twin->origin, f);
-		traceUp(destHedge->twin->origin, edgeList);
+		counter+= traceUp(destHedge->twin->origin, edgeList);
+		counter++;
 	}
 	else{
 		vertex *newVertex=createVertex(v->x, destHedge->origin->y);
@@ -514,9 +516,9 @@ void traceUp(vertex *v, link_list **edgeList){
 		changeVertexListSize(&list, numberOfVertices+1);
 		list[numberOfVertices]=newVertex;
 		numberOfVertices++;
-		traceUp(newVertex, edgeList);
+		counter+= traceUp(newVertex, edgeList);
 	}
-	return;
+	return counter;
 }
 
 void traceDown(vertex *v, link_list **edgeList){
@@ -554,7 +556,7 @@ void gridPartition(){
 		endOfLine=getVerticalLine(linePos);
 		for(int i=linePos; i<endOfLine; i++){
 			traceDown(list[i], &edgeList);
-			traceUp(list[i], &edgeList);
+			i+= traceUp(list[i], &edgeList);
 		}
 		for(int i=linePos; i<endOfLine; i++){
 			half_edge *tmp = getLeftEdge(list[i]);
