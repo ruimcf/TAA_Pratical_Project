@@ -95,7 +95,7 @@ int input(){
 			scanf("%d %d", &vertexX, &vertexY);
 			listHole[j]=createVertex(vertexX, vertexY);
 		}
-		createPolygon(numberOfVerticesHole, listHole, out, in);
+		createPolygon(numberOfVerticesHole, listHole, in, out);
 		printVertexList(listHole, numberOfVerticesHole);
 		catVertexList(&list, numberOfVertices, &listHole, numberOfVerticesHole);
 		numberOfVertices+=numberOfVerticesHole;
@@ -212,8 +212,12 @@ void horizontalGrid(){
 					else if((a->x < tmp->item->origin->x) && (b->x == tmp->item->origin->x)){
                         printf("Case 2 detected\n");
                         addSegmentationVertex(b);
-                        addSegmentationVertex(getVertex(tmp->next->item, tmp->next->item->origin->x, b->y));
-                        size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 0, getUpEdge(a));
+						if((j < sizeToConsider-1) && (listToConsider[j+1]->x < tmp->next->item->origin->x)){
+							addSegmentationVertex(listToConsider[j+1]);
+						}else{
+                        	addSegmentationVertex(getVertex(tmp->next->item, tmp->next->item->origin->x, b->y));
+						}
+						size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 0, getUpEdge(a));
                         size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 1, tmp->item);
 						printf("Sweepline\n");
 						printLinkList(*sweep_line);
@@ -247,7 +251,13 @@ void horizontalGrid(){
                             addSegmentationVertex(getVertex(tmp->item, tmp->item->origin->x, a->y));
                             addSegmentationVertex(a);
                             addSegmentationVertex(b);
-                            addSegmentationVertex(getVertex(tmp->next->next->next->item, tmp->next->next->next->item->origin->x, b->y));
+							if((j < sizeToConsider-1) && (listToConsider[j+1]->x < tmp->next->next->next->item->origin->x)){
+								addSegmentationVertex(listToConsider[j+1]);
+								printf("added segvertex in the list\n");
+							}else{
+								printf("added segvertex in the sweepline\n");
+								addSegmentationVertex(getVertex(tmp->next->next->next->item, tmp->next->next->next->item->origin->x, b->y));
+							}
                             size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 1, tmp->next->next->item);
                             size_sweep_line_action = addEventSweepLine(sweep_line_action_list, size_sweep_line_action, 1, tmp->next->item);
 							break;
@@ -397,6 +407,7 @@ vertex *getVertex(half_edge* edge, int x, int y){
 		return edge->twin->origin;
 	}
 	else{
+		printf("Added to list\n");
 		vertex *new = createVertex(x, y);
 		addInsertVertex(edge, new);
 		return new;
@@ -571,6 +582,7 @@ void gridPartition(){
 		linePos=endOfLine;
 		printDCEL(list, numberOfVertices);
 		printVertexList(list,numberOfVertices);
+		printf("########################\n");
 	}
 }
 		
