@@ -95,7 +95,7 @@ int input(){
 			scanf("%d %d", &vertexX, &vertexY);
 			listHole[j]=createVertex(vertexX, vertexY);
 		}
-		createPolygon(numberOfVerticesHole, listHole, out, in);
+		createPolygon(numberOfVerticesHole, listHole, in, out);
 		printVertexList(listHole, numberOfVerticesHole);
 		catVertexList(&list, numberOfVertices, &listHole, numberOfVerticesHole);
 		numberOfVertices+=numberOfVerticesHole;
