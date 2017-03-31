@@ -81,6 +81,21 @@ half_edge *getAfterY(link_list *head, int y){
 	return ptr->item;
 }
 
+half_edge *getBeforeX(link_list *head, int x){
+	link_list *ptr=head;
+	while(ptr->next->item->origin->x < x){
+		ptr=ptr->next;
+	}
+	return ptr->item;
+}
+
+half_edge *getAfterX(link_list *head, int x){
+	link_list *ptr=head;
+	while(ptr->item->origin->x <= x){
+		ptr=ptr->next;
+	}
+	return ptr->item;
+}
 
 void rmFromList(link_list **head, half_edge *item){
 	link_list **ptr=head,

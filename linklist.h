@@ -22,6 +22,10 @@ void addToListByY(link_list **head, half_edge *item);
 half_edge *getBeforeY(link_list *head, int y);
 
 half_edge *getAfterY(link_list *head, int y);
+
+half_edge *getBeforeX(link_list *head, int x);
+
+half_edge *getAfterX(link_list *head, int x);
 //takes adress of head ptr and item, and removes it from list (item needs to exist in the list)
 void rmFromList(link_list **head, half_edge *item);
 //takes head ptr of the list and prints the origin and dest of every edge on list
