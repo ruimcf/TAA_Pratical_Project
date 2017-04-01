@@ -58,15 +58,25 @@ link_list ** segmentationEdges;
 
 int main(int argc, char *argv[]){
 	int listSize = input();
+	int zoom = 1;
+	if(argc>1){
+		zoom = atoi(argv[1]);
+	}
 	// horizontalGrid();
 	// free(list);
 	// list=listWithSegmentation;
 	// numberOfVertices=numberOfVerticesWithSegmentation;
 	// listWithSegmentation=NULL;
+	printVertexList(list, numberOfVertices);
+	printDCEL(list,numberOfVertices, zoom);
 	horizontalPartition();
 	updateFaces();
+	printVertexList(list, numberOfVertices);
+	printDCEL(list, numberOfVertices, zoom);
 	if(option){
 		gridPartition();
+		printVertexList(list, numberOfVertices);
+		printDCEL(list, numberOfVertices, zoom);
 	}
 	free(list);
 }
@@ -102,8 +112,6 @@ int input(){
 		catVertexList(&list, numberOfVertices, &listHole, numberOfVerticesHole);
 		numberOfVertices+=numberOfVerticesHole;
 	}
-	printVertexList(list, numberOfVertices);
-	printDCEL(list, numberOfVertices);
 	return numberOfVertices;
 }
 
@@ -342,7 +350,7 @@ void horizontalGrid(){
         traceSegmentationEdges();
 		printf("All vertices:\n");
 		printVertexList(listWithSegmentation, numberOfVerticesWithSegmentation);
-		printDCEL(listWithSegmentation, numberOfVerticesWithSegmentation);
+		printDCEL(listWithSegmentation, numberOfVerticesWithSegmentation, 1);
 		printf("###############################\n");
 	}
 }
@@ -447,11 +455,6 @@ void updateFaces(){
 		he=list[i]->rep;
 		do{
 			addToList(&heList, he);
-			printf("(%d,%d)->(%d,%d)\n",
-					he->origin->x,
-					he->origin->y,
-					he->twin->origin->x,
-					he->twin->origin->y);
 			he=he->twin->next;
 		} while(he!=list[i]->rep);
 	}
@@ -635,7 +638,6 @@ void traceDown(vertex *v, link_list **edgeList){
 		insertEdgeUpdateFace(v, destHedge->twin->origin, f);
 		traceDown(destHedge->twin->origin, edgeList);
 	}
-	else if(
 	else{
 		vertex *newVertex=createVertex(v->x, destHedge->origin->y);
 		insertVertexKeep(newVertex, destHedge);
@@ -671,9 +673,6 @@ void gridPartition(){
 			}
 		}
 		linePos=endOfLine;
-		printDCEL(list, numberOfVertices);
-		printVertexList(list,numberOfVertices);
-		printf("########################\n");
 	}
 }
 
@@ -692,9 +691,6 @@ void horizontalPartition(){
 			}
 		}
 		for(int i=linePos; i<endOfLine; i++){
-			
-		}
-		for(int i=linePos; i<endOfLine; i++){
 			traceLeft(list[i], &edgeList);
 			i+= traceRight(list[i], &edgeList);
 		}
@@ -705,10 +701,44 @@ void horizontalPartition(){
 			}
 		}
 		linePos=endOfLine;
-		printDCEL(list, numberOfVertices);
-		printVertexList(list, numberOfVertices);
 	}
 }
+
+int vectorialProduct(int x1, int y1, int x2, int y2){
+	return x1*y2-y1*x2;
+}
+
+int orientation(vertex *p, vertex *q, vertex *r){
+	int v1x = q->x - p->x,
+	    v1y = q->y - p->y,
+	    v2x = r->x - q->x,
+	    v2y = r->y - q->y,
+	    result;
+	result = vectorialProduct(v1x, v1y, v2x, v2y);
+	if(result < 0){
+		return -1;
+	}
+	else if(result > 0){
+		return 1;
+	}
+	else{
+		return 0;
+	}
+}
+
+int intersec(vertex *v1, vertex *v2, half_edge *he){
+	if(orientation(v1, v2, he->origin) != 
+			orientation(v1, v2 ,he->twin->orientation) &&
+			orientation(he->origin, he->twin->origin, v1) !=
+			orientation(he->origin, he->twin->origin, v2)){
+		return 1;
+	}
+	else{
+		return 0;
+	}
+}
+
+	
 
 		
 

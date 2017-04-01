@@ -153,7 +153,6 @@ void createPolygon(int num, vertex **listCCW, face *in, face *out){
 }
 
 void insertVertex(vertex *v, half_edge *he){
-	printf("inserting vertex\n");
 	half_edge *out1 = malloc(sizeof(half_edge)),
 		  *out2 = malloc(sizeof(half_edge)),
 		  *in1 = malloc(sizeof(half_edge)),
@@ -196,7 +195,6 @@ void insertVertex(vertex *v, half_edge *he){
 }
 
 void insertVertexKeep(vertex *v, half_edge *he){
-	printf("inserting vertex\n");
 	half_edge *out = malloc(sizeof(half_edge)),
 		  *in = malloc(sizeof(half_edge));
 	out->origin=v;
@@ -311,10 +309,14 @@ void insertEdgeUpdateFace(vertex *src, vertex *dest,face *keepFace){
 void printVertexList(vertex **list, int size){
 	half_edge *tmp;
 	for(int i=0; i<size; i++){
-		printf("(%d,%d) ligado a: ", list[i]->x, list[i]->y);
+		printf("(%d,%d) ligado a: ", 
+				list[i]->x, 
+				list[i]->y);
 		tmp=list[i]->rep;
 		do{
-			printf("(%d,%d) ", tmp->twin->origin->x, tmp->twin->origin->y);
+			printf("(%d,%d) ", 
+					tmp->twin->origin->x, 
+					tmp->twin->origin->y);
 			tmp=tmp->twin->next;
 		}while(tmp!=list[i]->rep);
 		printf("\n");
@@ -324,7 +326,8 @@ void printVertexList(vertex **list, int size){
 int vertexConnected(vertex* vertex1, vertex* vertex2){
 	half_edge *tmp = vertex1->rep;
 	do{
-		if(tmp->twin->origin->x == vertex2->x && tmp->twin->origin->y == vertex2->y){
+		if(tmp->twin->origin->x == vertex2->x && 
+				tmp->twin->origin->y == vertex2->y){
 			return 1;
 		}
 		tmp=tmp->twin->next;
@@ -332,13 +335,13 @@ int vertexConnected(vertex* vertex1, vertex* vertex2){
 	return 0;
 }
 
-void printDCEL(vertex **list, int size){
+void printDCEL(vertex **list, int size, int mult){
 	if(size==0){
 		return;
 	}
 	int xMax,
-		yMax,
-		pos;
+	    yMax,
+	    pos;
 	xMax = list[0]->x;
 	yMax = list[0]->y;
 	for(int i=1; i<size; i++){
@@ -351,48 +354,50 @@ void printDCEL(vertex **list, int size){
 	}
 	yMax++;
 	xMax++;
+	yMax=yMax*mult;
+	xMax=xMax*mult;
 	char *screen=malloc(xMax*yMax);
 	memset(screen, ' ', xMax*yMax);
 	for(int i=0; i<size; i++){
-		pos=(list[i]->x) + (list[i]->y * xMax);
+		pos=(list[i]->x * mult) + (list[i]->y * mult * xMax);
 		screen[pos]='0';
 		half_edge *edge=list[i]->rep;
 		do{
 			vertex *connect = edge->twin->origin;
 			if(connect->x == list[i]->x){
 				if(connect->y > list[i]->y){
-					int up=connect->y,
-						down=list[i]->y;
+					int up=connect->y * mult, 
+					    down=list[i]->y * mult;
 					for(int e=down+1; e<down+(up-down-1)/2; e++){
-						screen[connect->x + e*xMax]='|';
+						screen[connect->x*mult + e*xMax]='|';
 					}
-					screen[connect->x + (down+(up-down-1)/2)*xMax]='^';
+					screen[connect->x*mult + (down+(up-down-1)/2)*xMax]='^';
 				}
 				else{
-					int up=list[i]->y,
-						down=connect->y;
+					int up=list[i]->y*mult,
+					    down=connect->y*mult;
 					for(int e=up-1; e>up-(up-down-1)/2; e--){
-						screen[connect->x + e*xMax]='|';
+						screen[connect->x*mult + e*xMax]='|';
 					}
-					screen[connect->x + (up-(up-down-1)/2)*xMax]='v';
+					screen[connect->x*mult + (up-(up-down-1)/2)*xMax]='v';
 				}
 			}
 			else if(connect->y == list[i]->y){
 				if(connect->x > list[i]->x){
-					int right=connect->x,
-						left=list[i]->x;
+					int right=connect->x*mult,
+					    left=list[i]->x*mult;
 					for(int e=left+1; e<left+(right-left-1)/2; e++){
-						screen[e + connect->y*xMax]='-';
+						screen[e + connect->y*xMax*mult]='-';
 					}
-					screen[(left+(right-left-1)/2) + connect->y*xMax]='>';
+					screen[(left+(right-left-1)/2) + connect->y*mult*xMax]='>';
 				}
 				else{
-					int right=list[i]->x,
-						left=connect->x;
+					int right=list[i]->x*mult,
+					    left=connect->x*mult;
 					for(int e=right-1; e>left-(left-right-1)/2; e--){
-						screen[e + connect->y*xMax]='-';
+						screen[e + connect->y*mult*xMax]='-';
 					}
-					screen[(left-(left-right-1)/2) + connect->y*xMax]='<';
+					screen[(left-(left-right-1)/2) + connect->y*mult*xMax]='<';
 				}
 			}
 			edge=edge->twin->next;
