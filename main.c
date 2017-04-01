@@ -27,7 +27,10 @@ void horizontalColinearCase(link_list *tmp, vertex *point);
 int getVertexToConsider(vertex ***listToConsider, int i, int direction);
 void updateFaces();
 void horizontalPartition();
-
+link_list **getAllOutEdges();
+double intersection(int Ax, int Ay, int Bx, int By);
+int dotProduct(int X1, int Y1, int X2, int Y2);
+void visibility(vertex *origin);
 
 void gridPartition();
 
@@ -55,6 +58,8 @@ sweep_line_action ** sweep_line_action_list;
 int size_sweep_line_action;
 /* The List that contains all segmentation edges traced */
 link_list ** segmentationEdges;
+link_list **allFaces;
+
 
 int main(int argc, char *argv[]){
 	int listSize = input();
@@ -65,6 +70,10 @@ int main(int argc, char *argv[]){
 	// listWithSegmentation=NULL;
 	horizontalPartition();
 	updateFaces();
+	printf("Out EDGES -----------------------\n");
+	link_list ** listOutEdges = getAllOutEdges();
+	printf("Allfaces:\n");
+	printLinkList(*allFaces);
 	if(option){
 		gridPartition();
 	}
@@ -441,6 +450,8 @@ void runInsertVertex(link_list **sweep_line){
 
 void updateFaces(){
 	link_list *heList = NULL;
+	allFaces = malloc(sizeof(link_list*));
+	*allFaces = NULL;
 	half_edge *he;
 	face *tmp;
 	for(int i=0; i<numberOfVertices; i++){
@@ -463,6 +474,7 @@ void updateFaces(){
 		else{
 			tmp=malloc(sizeof(face));
 			tmp->rep=he;
+			addToList(allFaces, he);
 			printf("face:\n");
 			while(he->face!=tmp){
 				printf("(%d,%d)->(%d,%d)\n",
@@ -476,6 +488,28 @@ void updateFaces(){
 			}
 		}
 	}
+}
+
+link_list ** getAllOutEdges(){
+	link_list **heList = malloc(sizeof(link_list*));
+	*heList = NULL;
+	half_edge *he;
+	face *tmp;
+	for(int i=0; i<numberOfVertices; i++){
+		he=list[i]->rep;
+		do{
+			if(he->face == out){
+				addToList(heList, he);
+				printf("(%d,%d)->(%d,%d)\n",
+						he->origin->x,
+						he->origin->y,
+						he->twin->origin->x,
+						he->twin->origin->y);
+			}
+			he=he->twin->next;
+		} while(he!=list[i]->rep);
+	}
+	return heList;
 }
 
 int getHorizontalLine(int start){
@@ -706,12 +740,36 @@ void horizontalPartition(){
 	}
 }
 
-		
+double intersection(vertex *vertex1, vertex *vertex2, vertex *vertex3, vertex *vertex4){
+	int Ax = vertex1->x;
+	int Ay = vertex1->y;
+	int Bx = vertex2->x;
+	int By = vertex2->y;
+	int Cx = vertex3->x;
+	int Cy = vertex3->y;
+	int Dx = vertex4->x;
+	int Dy = vertex4->y;
+	int Ex = Bx - Ax;
+	int Ey = By - Ay;
+	int Fx = Dx - Cx;
+	int Fy = Dy - Cy;
+	int Px = -Ey;
+	int Py = Ex;
+	if(dotProduct(Fx, Fy, Px, Py) == 0){
+		return -1;
+	}
+	double h = dotProduct(Ax-Cx, Ay-Cy, Px, Py) / dotProduct(Fx, Fy, Px, Py);
+	return h;
+}
 
+int dotProduct(int X1, int Y1, int X2, int Y2){
+	return((X1*X2)+(Y1*Y2));
+}
 
-			
-
-
-
-
-
+void visibility(vertex *origin){
+	half_edge *he = origin->rep;
+	if(he->face != out){
+		face *initFace = he->face;
+		vertex *a = he->next->origin
+	}
+}

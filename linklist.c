@@ -144,3 +144,35 @@ void printLinkList(link_list *head){
 	}
 	return;
 }
+
+void addToQueue(queue *head, face *face, visibility_cone *vis){
+	queue *tmp = head;
+	queue *new = malloc(sizeof(queue));
+	new->face = face;
+	new->visibility_cone = vis;
+	new->next = NULL;
+	if(tmp == NULL){
+		head = new;
+		return;
+	}
+	while(tmp->next != NULL){
+		if(tmp->face == face){
+			return;
+		}
+		tmp=tmp->next;
+	}
+	tmp->next = new;
+}
+
+queue *popQueue(queue *head){
+	queue *tmp = *head;
+	head = head->next;
+	return tmp;
+}
+
+void printQueue(queue *head){
+	queue *tmp = head;
+	while(tmp != NULL){
+		printf("Queue element, face and cone (%d|%d) to (%d|%d)",tmp->visibility_cone->a->x, tmp->visibility_cone->a->y, tmp->visibility_cone->b->x, tmp->visibility_cone->b->y);
+	}
+}

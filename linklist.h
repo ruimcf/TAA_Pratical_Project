@@ -11,6 +11,22 @@ typedef struct s_sweep_line_action{
 	half_edge *edge;
 } sweep_line_action;
 
+typedef struct s_visibility_cone{
+	vertex *origin;
+	vertex *a;
+	vertex *b;
+} visibility_cone;
+
+typedef struct s_queue{
+	face *face;
+	visibility_cone *visibility_cone;
+	struct s_queue *next;
+} queue;
+
+void addToQueue(queue *head, face *face);
+queue *popQueue(queue *head);
+void printQueue(queue *head);
+
 
 //takes the adress of head ptr and ptr to item and adds it to the begining of the list
 void addToList(link_list **head, half_edge *item);
