@@ -630,6 +630,7 @@ void traceDown(vertex *v, link_list **edgeList){
 		insertEdgeUpdateFace(v, destHedge->twin->origin, f);
 		traceDown(destHedge->twin->origin, edgeList);
 	}
+	else if(
 	else{
 		vertex *newVertex=createVertex(v->x, destHedge->origin->y);
 		insertVertexKeep(newVertex, destHedge);
@@ -679,6 +680,9 @@ void horizontalPartition(){
 	    endOfPoly = numberOfVertices;
 	while(linePos<endOfPoly){
 		endOfLine=getHorizontalLine(linePos);
+		for(int i=linePos; i<endOfLine; i++){
+			
+		}
 		for(int i=linePos; i<endOfLine; i++){
 			traceLeft(list[i], &edgeList);
 			i+= traceRight(list[i], &edgeList);
