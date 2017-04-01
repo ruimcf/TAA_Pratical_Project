@@ -58,11 +58,11 @@ link_list ** segmentationEdges;
 
 int main(int argc, char *argv[]){
 	int listSize = input();
-//	horizontalGrid();
-//	free(list);
-//	list=listWithSegmentation;
-//	numberOfVertices=numberOfVerticesWithSegmentation;
-//	listWithSegmentation=NULL;
+	// horizontalGrid();
+	// free(list);
+	// list=listWithSegmentation;
+	// numberOfVertices=numberOfVerticesWithSegmentation;
+	// listWithSegmentation=NULL;
 	horizontalPartition();
 	updateFaces();
 	if(option){
@@ -578,6 +578,11 @@ int traceRight(vertex *v, link_list **edgeList){
 		counter+= traceRight(destHedge->twin->origin, edgeList);
 		counter++;
 	}
+	else if(destHedge->origin->y == v->y){
+		insertEdge(v, destHedge->origin, in);
+		counter += traceRight(destHedge->origin, edgeList);
+		counter++;
+	}
 	else{
 		vertex *newVertex=createVertex(destHedge->origin->x, v->y);
 		insertVertexKeep(newVertex, destHedge);
@@ -656,13 +661,13 @@ void gridPartition(){
 			i+= traceUp(list[i], &edgeList);
 		}
 		for(int i=linePos; i<endOfLine; i++){
-			half_edge *tmp = getLeftEdge(list[i]);
-			if(tmp!=NULL){
-				rmFromList(&edgeList, tmp->twin);
-			}
-			tmp = getRightEdge(list[i]);
+			half_edge *tmp = getRightEdge(list[i]);
 			if(tmp!=NULL){
 				addToListByY(&edgeList, tmp);
+			}
+			tmp = getLeftEdge(list[i]);
+			if(tmp!=NULL){
+				rmFromList(&edgeList, tmp->twin);
 			}
 		}
 		linePos=endOfLine;
@@ -680,6 +685,12 @@ void horizontalPartition(){
 	    endOfPoly = numberOfVertices;
 	while(linePos<endOfPoly){
 		endOfLine=getHorizontalLine(linePos);
+		for(int i=linePos; i<endOfLine;i++){
+			half_edge *tmp = getUpEdge(list[i]);
+			if(tmp!=NULL){
+				addToListByX(&edgeList, tmp);
+			}
+		}
 		for(int i=linePos; i<endOfLine; i++){
 			
 		}
@@ -691,10 +702,6 @@ void horizontalPartition(){
 			half_edge *tmp = getDownEdge(list[i]);
 			if(tmp!=NULL){
 				rmFromList(&edgeList, tmp->twin);
-			}
-			tmp = getUpEdge(list[i]);
-			if(tmp!=NULL){
-				addToListByX(&edgeList, tmp);
 			}
 		}
 		linePos=endOfLine;
