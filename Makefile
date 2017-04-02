@@ -4,7 +4,7 @@ CFLAGS=-std=c99 -g
 all: example
 
 example: main.o dcel.o linklist.o
-	$(CC) main.o dcel.o linklist.o -o example -I. $(CFLAGS)
+	$(CC) main.o dcel.o linklist.o -o example -I. -lglpk $(CFLAGS)
 
 main.o: main.c
 	$(CC) -c main.c -I. $(CFLAGS)

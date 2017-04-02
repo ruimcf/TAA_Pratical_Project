@@ -80,6 +80,12 @@ face_list *listVisibleFaces(vertex *guard,
 		face_list *allFaces, 
 		edge_list *outEdges);
 
+void minimumVertexGuard(int k,
+		face_list *allFaces, 
+		vertex **vertexList,
+		int vertexListSize,
+		edge_list *outEdges);
+
 /* Vertex lists */
 vertex** list;
 vertex** listWithSegmentation;
@@ -121,7 +127,7 @@ int main(int argc, char *argv[]){
 	}
 	if(argc>2 && strcmp(argv[2], "mvg")==0){
 		originalList=initVertexList(numberOfVertices);
-		memcpy(originalList, list, numberOfVertices);
+		memcpy(originalList, list, numberOfVertices*sizeof(vertex*));
 		originalSize=numberOfVertices;
 	}
 	// horizontalGrid();
@@ -153,7 +159,12 @@ int main(int argc, char *argv[]){
 			printFaceList(visibleFaces);
 		}
 		if(originalSize>0){
-			//problema 3
+			edge_list * listOutEdges = getAllOutEdges();
+			minimumVertexGuard(atoi(argv[3]),
+					faceList,
+					originalList,
+					originalSize,
+					listOutEdges);
 		}
 	}
 	free(list);
@@ -872,14 +883,44 @@ void minimumVertexGuard(int k,
 		int vertexListSize,
 		edge_list *outEdges){
 	int numberOfFaces=faceListSize(allFaces);
+	int f[vertexListSize*numberOfFaces+1], 
+	    v[vertexListSize*numberOfFaces+1];
+	double vis[vertexListSize*numberOfFaces+1];
 	glp_prob *lp;
 	lp=glp_create_prob();
 	glp_set_obj_dir(lp, GLP_MIN);
 	glp_add_rows(lp, numberOfFaces);
 	for(int i=1; i<=numberOfFaces; i++){
-		glp_set_row_bnds(lp, i, GLP_LO, k, 0);
+		glp_set_row_bnds(lp, i, GLP_LO,(double) k, 0.0);
 	}
 	glp_add_cols(lp, vertexListSize);
+	for(int i=1; i<=vertexListSize; i++){
+		glp_set_col_kind(lp, i, GLP_BV);
+		glp_set_obj_coef(lp, i, 1.0);
+	}
+	int counter=1;
+	for(int i=0; i<numberOfFaces; i++){
+		for(int j=0; j<vertexListSize; j++){
+			f[counter]=i+1;
+			v[counter]=j+1;
+			vis[counter]=(double)visibleFace(vertexList[j], 
+					allFaces->item, 
+					outEdges);
+			counter++;
+		}
+		allFaces=allFaces->next;
+	}
+	glp_load_matrix(lp, numberOfFaces*vertexListSize, f, v, vis);
+	glp_simplex(lp, NULL);
+	glp_intopt(lp, NULL);
+	printf("Number of Vertices needed: %f\n", glp_mip_obj_val(lp));
+	for(int i=1; i<=vertexListSize;i++){
+		if(glp_mip_col_val(lp, i)>0.0){
+			printf("(%d,%d)", 
+					vertexList[i-1]->x,
+					vertexList[i-1]->y);
+		}
+	}
 }
 
 
