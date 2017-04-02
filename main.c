@@ -16,20 +16,68 @@
  *		-Update Partition structure
  */
 int input();
-void horizontalGrid();
-void addSegmentationVertex(vertex* a);
-void traceSegmentationEdges();
-void printSegmentationVertex();
-vertex *getVertex(half_edge *edge, int x, int y);
-void addInsertVertex(half_edge *edge, vertex *new);
-void runInsertVertex(link_list **sweep_line);
-void horizontalColinearCase(link_list *tmp, vertex *point);
+
+void initStructures();
+
 int getVertexToConsider(vertex ***listToConsider, int i, int direction);
-void updateFaces();
+
+void horizontalGrid();
+
+void horizontalColinearCase(edge_list *tmp, vertex *point);
+
+void addSegmentationVertex(vertex* a);
+
+void traceSegmentationEdges();
+
+void printSegmentationVertex();
+
+vertex *getVertex(half_edge *edge, int x, int y);
+
+void addInsertVertex(half_edge *edge, vertex *new);
+
+void runInsertVertex(edge_list **sweep_line);
+
+void updateFaces(face_list **faceList);
+
+edge_list *getAllOutEdges();
+
+int getHorizontalLine(int start);
+
+int getVerticalLine(int start);
+
+face *faceUp(vertex *v);
+
+face *faceDown(vertex *v);
+
+face *faceLeft(vertex *v);
+
+face *faceRight(vertex *v);
+
+void traceLeft(vertex *v, edge_list *edgeList);
+
+int traceRight(vertex *v, edge_list *edgeList);
+
+int traceUp(vertex *v, edge_list *edgeList, face_list **faceList);
+
+void traceDown(vertex *v, edge_list *edgeList, face_list **faceList);
+
+void gridPartition(face_list **faceList);
+
 void horizontalPartition();
 
+int dotProduct(int x1, int y1, int x2, int y2);
 
-void gridPartition();
+int orientation(vertex *p, vertex *q, vertex *r);
+
+int intersection(vertex *v1, vertex *v2, half_edge *he);
+
+int visibleVertex(vertex *guard, vertex *test, edge_list *outEdges);
+
+int visibleFace(vertex *guard, face *test, edge_list *outEdges);
+
+face_list *listVisibleFaces(vertex *guard, 
+		face_list *allFaces, 
+		edge_list *outEdges);
 
 /* Vertex lists */
 vertex** list;
@@ -37,13 +85,13 @@ vertex** listWithSegmentation;
 int numberOfVerticesWithSegmentation;
 /* Initial two faces */
 face *in,
-	 *out;
+     *out;
 /* Input arguments */
 int option;
 int numberOfVertices;
 int numberOfHoles;
 /* The Sweep Line that contains the current edges to be considered */
-link_list **sweep_line;
+edge_list **sweep_line;
 /* Where we store the vertex that will be be used to trace segmentation edges */
 vertex** segmentationVertex;
 int sizeSegmentationVertex;
@@ -54,13 +102,19 @@ int sizeListVertexToInsert;
 sweep_line_action ** sweep_line_action_list;
 int size_sweep_line_action;
 /* The List that contains all segmentation edges traced */
-link_list ** segmentationEdges;
+edge_list ** segmentationEdges;
+
 
 int main(int argc, char *argv[]){
+	face_list *faceList=NULL;
 	int listSize = input();
 	int zoom = 1;
+	vertex *guard=NULL;
 	if(argc>1){
 		zoom = atoi(argv[1]);
+	}
+	if(argc>2){
+		guard = list[atoi(argv[2])];
 	}
 	// horizontalGrid();
 	// free(list);
@@ -70,13 +124,24 @@ int main(int argc, char *argv[]){
 	printVertexList(list, numberOfVertices);
 	printDCEL(list,numberOfVertices, zoom);
 	horizontalPartition();
-	updateFaces();
+	updateFaces(&faceList);
 	printVertexList(list, numberOfVertices);
 	printDCEL(list, numberOfVertices, zoom);
 	if(option){
-		gridPartition();
+		gridPartition(&faceList);
 		printVertexList(list, numberOfVertices);
 		printDCEL(list, numberOfVertices, zoom);
+		printf("Out EDGES -----------------------\n");
+		edge_list * listOutEdges = getAllOutEdges();
+		if(guard!=NULL){
+			face_list *visibleFaces = listVisibleFaces(guard,
+					faceList,
+					listOutEdges);
+			printf("All faces:\n");
+			printFaceList(faceList);
+			printf("Visible faces:\n");
+			printFaceList(visibleFaces);
+		}
 	}
 	free(list);
 }
@@ -117,7 +182,7 @@ int input(){
 
 void initStructures(){
 	/* Init Sweep Line */
-	sweep_line = malloc(sizeof(link_list*));
+	sweep_line = malloc(sizeof(edge_list*));
 	(*sweep_line) = NULL;
 	/* Init Sweep Line Action List */
 	sweep_line_action_list = malloc(sizeof(sweep_line_action*)*numberOfVertices);
@@ -129,7 +194,7 @@ void initStructures(){
 	listVertexToInsert = malloc(sizeof(structInsertVertex*)*numberOfVertices);
 	sizeListVertexToInsert = 0;
 	/* Init Segmentation Edges List */
-	segmentationEdges = malloc(sizeof(link_list*));
+	segmentationEdges = malloc(sizeof(edge_list*));
 	/* Init List With segmentation */
 	listWithSegmentation = initVertexList(numberOfVertices);
 	memcpy(listWithSegmentation, list, sizeof(vertex*)*numberOfVertices);
@@ -174,7 +239,7 @@ void horizontalGrid(){
 		i += sizeToConsider;
 		/* For each vertex that we have to consider, we have to find the case that it satisfies */
 		for(int j = 0; j < sizeToConsider; j++){
-			link_list *tmp = *sweep_line;
+			edge_list *tmp = *sweep_line;
 			/* If the vertex forms an horizontal edge with another */
 			if(j > 0 && vertexConnected(listToConsider[j-1], listToConsider[j])){
 				/* If next vertex are colinear, we must treat all as one edge */
@@ -356,7 +421,7 @@ void horizontalGrid(){
 }
 
 
-void horizontalColinearCase(link_list *tmp, vertex *point){
+void horizontalColinearCase(edge_list *tmp, vertex *point){
     printf("Case Colinear detected\n");
     int i = 1;
     /* Dest is the destination of the colinear point segmentation trace */
@@ -432,7 +497,7 @@ void addInsertVertex(half_edge *edge, vertex *new){
 	sizeListVertexToInsert++;
 }
 
-void runInsertVertex(link_list **sweep_line){
+void runInsertVertex(edge_list **sweep_line){
 	for(int i = 0; i < sizeListVertexToInsert; i++){
 		rmFromList(sweep_line, listVertexToInsert[i]->edge);
 		if(listVertexToInsert[i]->edge->face == out){
@@ -447,8 +512,8 @@ void runInsertVertex(link_list **sweep_line){
 	sizeListVertexToInsert = 0;
 }
 
-void updateFaces(){
-	link_list *heList = NULL;
+void updateFaces(face_list **faceList){
+	edge_list *heList = NULL;
 	half_edge *he;
 	face *tmp;
 	for(int i=0; i<numberOfVertices; i++){
@@ -465,6 +530,7 @@ void updateFaces(){
 		}
 		else{
 			tmp=malloc(sizeof(face));
+			addToFaceList(faceList, tmp);
 			tmp->rep=he;
 			printf("face:\n");
 			while(he->face!=tmp){
@@ -479,6 +545,28 @@ void updateFaces(){
 			}
 		}
 	}
+	free(in);
+}
+
+edge_list * getAllOutEdges(){
+	edge_list *heList = NULL;
+	half_edge *he;
+	face *tmp;
+	for(int i=0; i<numberOfVertices; i++){
+		he=list[i]->rep;
+		do{
+			if(he->face == out){
+				addToList(&heList, he);
+				printf("(%d,%d)->(%d,%d)\n",
+						he->origin->x,
+						he->origin->y,
+						he->twin->origin->x,
+						he->twin->origin->y);
+			}
+			he=he->twin->next;
+		} while(he!=list[i]->rep);
+	}
+	return heList;
 }
 
 int getHorizontalLine(int start){
@@ -541,7 +629,7 @@ face *faceRight(vertex *v){
 	}
 }
 
-void traceLeft(vertex *v, link_list **edgeList){
+void traceLeft(vertex *v, edge_list *edgeList){
 	if(getLeftEdge(v)!=NULL){
 		return;
 	}
@@ -549,7 +637,7 @@ void traceLeft(vertex *v, link_list **edgeList){
 	if(f==out){
 		return;
 	}
-	half_edge *destHedge=getBeforeX(*edgeList, v->x);
+	half_edge *destHedge=getBeforeX(edgeList, v->x);
 	if(destHedge->twin->origin->y == v->y){
 		insertEdge(v, destHedge->twin->origin, in);
 		traceLeft(destHedge->twin->origin, edgeList);
@@ -566,7 +654,7 @@ void traceLeft(vertex *v, link_list **edgeList){
 	return;
 }
 
-int traceRight(vertex *v, link_list **edgeList){
+int traceRight(vertex *v, edge_list *edgeList){
 	int counter=0;
 	if(getRightEdge(v)!=NULL){
 		return counter;
@@ -575,7 +663,7 @@ int traceRight(vertex *v, link_list **edgeList){
 	if(f==out){
 		return counter;
 	}
-	half_edge *destHedge=getAfterX(*edgeList, v->x);
+	half_edge *destHedge=getAfterX(edgeList, v->x);
 	if(destHedge->twin->origin->y == v->y){
 		insertEdge(v, destHedge->twin->origin, in);
 		counter+= traceRight(destHedge->twin->origin, edgeList);
@@ -598,69 +686,73 @@ int traceRight(vertex *v, link_list **edgeList){
 	return counter;
 }
 
-int traceUp(vertex *v, link_list **edgeList){
+int traceUp(vertex *v, edge_list *edgeList, face_list **faceList){
 	int counter=0;
 	if(getUpEdge(v)!=NULL){
 		return counter;
 	}
-	face *f = faceUp(v);
+	face *f = faceUp(v),
+	     *newFace;
 	if(f==out){
 		return counter;
 	}
-	half_edge *destHedge=getAfterY(*edgeList, v->y);
+	half_edge *destHedge=getAfterY(edgeList, v->y);
 	if(destHedge->twin->origin->x == v->x){
-		insertEdgeUpdateFace(v, destHedge->twin->origin, f);
-		counter+= traceUp(destHedge->twin->origin, edgeList);
+		newFace = insertEdgeUpdateFace(v, destHedge->twin->origin, f);
+		counter+= traceUp(destHedge->twin->origin, edgeList, faceList);
 		counter++;
 	}
 	else{
 		vertex *newVertex=createVertex(v->x, destHedge->origin->y);
 		insertVertexKeep(newVertex, destHedge);
-		insertEdgeUpdateFace(v, newVertex, f);
+		newFace = insertEdgeUpdateFace(v, newVertex, f);
 		changeVertexListSize(&list, numberOfVertices+1);
 		list[numberOfVertices]=newVertex;
 		numberOfVertices++;
-		counter+= traceUp(newVertex, edgeList);
+		counter+= traceUp(newVertex, edgeList, faceList);
 	}
+	addToFaceList(faceList, newFace);
 	return counter;
 }
 
-void traceDown(vertex *v, link_list **edgeList){
+void traceDown(vertex *v, edge_list *edgeList, face_list **faceList){
 	if(getDownEdge(v)!=NULL){
 		return;
 	}
-	face *f = faceDown(v);
+	face *f = faceDown(v),
+	     *newFace;
 	if(f==out){
 		return;
 	}
-	half_edge *destHedge=getBeforeY(*edgeList, v->y);
+	half_edge *destHedge=getBeforeY(edgeList, v->y);
 	if(destHedge->twin->origin->x == v->x){
-		insertEdgeUpdateFace(v, destHedge->twin->origin, f);
-		traceDown(destHedge->twin->origin, edgeList);
+		newFace = insertEdgeUpdateFace(v, destHedge->twin->origin, f);
+		traceDown(destHedge->twin->origin, edgeList, faceList);
 	}
 	else{
 		vertex *newVertex=createVertex(v->x, destHedge->origin->y);
 		insertVertexKeep(newVertex, destHedge);
-		insertEdgeUpdateFace(v, newVertex, f);
+		newFace = insertEdgeUpdateFace(v, newVertex, f);
 		changeVertexListSize(&list, numberOfVertices+1);
 		list[numberOfVertices]=newVertex;
 		numberOfVertices++;
-		traceDown(newVertex, edgeList);
+		traceDown(newVertex, edgeList, faceList);
 	}
+	addToFaceList(faceList, newFace);
 	return;
 }
 
-void gridPartition(){
+void gridPartition(face_list **faceList){
 	sortVertexListX(list, numberOfVertices);
-	link_list *edgeList=NULL;
+	edge_list *edgeList=NULL;
 	int linePos=0;
 	int endOfLine;
 	int endOfPoly=numberOfVertices;
 	while(linePos<endOfPoly){
 		endOfLine=getVerticalLine(linePos);
 		for(int i=linePos; i<endOfLine; i++){
-			traceDown(list[i], &edgeList);
-			i+= traceUp(list[i], &edgeList);
+			traceDown(list[i], edgeList, faceList);
+			i+= traceUp(list[i], edgeList, faceList);
 		}
 		for(int i=linePos; i<endOfLine; i++){
 			half_edge *tmp = getRightEdge(list[i]);
@@ -678,7 +770,7 @@ void gridPartition(){
 
 void horizontalPartition(){
 	sortVertexListY(list, numberOfVertices);
-	link_list *edgeList=NULL;
+	edge_list *edgeList=NULL;
 	int linePos = 0,
 	    endOfLine,
 	    endOfPoly = numberOfVertices;
@@ -691,8 +783,8 @@ void horizontalPartition(){
 			}
 		}
 		for(int i=linePos; i<endOfLine; i++){
-			traceLeft(list[i], &edgeList);
-			i+= traceRight(list[i], &edgeList);
+			traceLeft(list[i], edgeList);
+			i+= traceRight(list[i], edgeList);
 		}
 		for(int i=linePos; i<endOfLine;i++){
 			half_edge *tmp = getDownEdge(list[i]);
@@ -704,7 +796,7 @@ void horizontalPartition(){
 	}
 }
 
-int vectorialProduct(int x1, int y1, int x2, int y2){
+int dotProduct(int x1, int y1, int x2, int y2){
 	return x1*y2-y1*x2;
 }
 
@@ -714,7 +806,7 @@ int orientation(vertex *p, vertex *q, vertex *r){
 	    v2x = r->x - q->x,
 	    v2y = r->y - q->y,
 	    result;
-	result = vectorialProduct(v1x, v1y, v2x, v2y);
+	result = dotProduct(v1x, v1y, v2x, v2y);
 	if(result < 0){
 		return -1;
 	}
@@ -726,11 +818,21 @@ int orientation(vertex *p, vertex *q, vertex *r){
 	}
 }
 
-int intersec(vertex *v1, vertex *v2, half_edge *he){
-	if(orientation(v1, v2, he->origin) != 
-			orientation(v1, v2 ,he->twin->orientation) &&
-			orientation(he->origin, he->twin->origin, v1) !=
-			orientation(he->origin, he->twin->origin, v2)){
+int intersection(vertex *v1, vertex *v2, half_edge *he){
+	int o1 = orientation(v1, v2, he->origin),
+	    o2 = orientation(v1, v2 ,he->twin->origin),
+	    o3 = orientation(he->origin, he->twin->origin, v1),
+	    o4 = orientation(he->origin, he->twin->origin, v2);
+	if((o1+o2)==0 && (o3+o4)==0 && o1!=0 && o3!=0){
+		printf("intersection (%d,%d)->(%d,%d) & (%d,%d)->(%d,%d)\n",
+				v1->x,
+				v1->y,
+				v2->x,
+				v2->y,
+				he->origin->x,
+				he->origin->y,
+				he->twin->origin->x,
+				he->twin->origin->y);
 		return 1;
 	}
 	else{
@@ -738,14 +840,39 @@ int intersec(vertex *v1, vertex *v2, half_edge *he){
 	}
 }
 
-	
+int visibleVertex(vertex *guard, vertex *test, edge_list *outEdges){
+	while(outEdges!=NULL){
+		if(intersection(guard, test, outEdges->item)){
+			printf("vertex not visible (%d,%d)\n", 
+					test->x, 
+					test->y);
+			return 0;
+		}
+		outEdges=outEdges->next;
+	}
+	return 1;
+}
 
-		
+int visibleFace(vertex *guard, face *test, edge_list *outEdges){
+	half_edge *he=test->rep;
+	do{
+		if(visibleVertex(guard, he->origin, outEdges)==0){
+			return 0;
+		}
+		he=he->next;
+	} while(he!=test->rep);
+	return 1;
+}
 
-
-			
-
-
-
-
-
+face_list *listVisibleFaces(vertex *guard, 
+		face_list *allFaces, 
+		edge_list *outEdges){
+	face_list *visibleFaces=NULL;
+	while(allFaces!=NULL){
+		if(visibleFace(guard, allFaces->item, outEdges)){
+			addToFaceList(&visibleFaces, allFaces->item);
+		}
+		allFaces=allFaces->next;
+	}
+	return visibleFaces;
+}

@@ -44,7 +44,7 @@ void insertVertexKeep(vertex *v, half_edge *he);
 //keepFace on the left
 void insertEdge(vertex *src, vertex *dest, face *keepFace);
 
-void insertEdgeUpdateFace(vertex *src, vertex *dest, face *keepFace);
+face *insertEdgeUpdateFace(vertex *src, vertex *dest, face *keepFace);
 
 void printVertexList(vertex **list, int size);
 

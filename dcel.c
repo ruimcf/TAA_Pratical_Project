@@ -258,7 +258,7 @@ void insertEdge(vertex *src, vertex *dest,face *keepFace){
 	return;
 }
 
-void insertEdgeUpdateFace(vertex *src, vertex *dest,face *keepFace){
+face *insertEdgeUpdateFace(vertex *src, vertex *dest, face *keepFace){
 	half_edge *front = malloc(sizeof(half_edge));
 	half_edge *back = malloc(sizeof(half_edge));
 	face *newFace = malloc(sizeof(face));
@@ -303,7 +303,7 @@ void insertEdgeUpdateFace(vertex *src, vertex *dest,face *keepFace){
 		tmp->face=newFace;
 		tmp=tmp->next;
 	}
-	return;
+	return newFace;
 }
 
 void printVertexList(vertex **list, int size){
