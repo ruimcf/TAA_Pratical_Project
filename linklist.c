@@ -165,6 +165,15 @@ void rmFromFaceList(face_list **head, face *item){
 	return;
 }
 
+int faceListSize(face_list *head){
+	int counter=0;
+	while(head!=NULL){
+		counter++;
+		head=head->next;
+	}
+	return counter;
+}
+
 void printFaceList(face_list *head){
 	half_edge *he;
 	while(head!=NULL){

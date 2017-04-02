@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <linklist.h>
 #include <string.h>
+#include <glpk.h>
 /*
  * Pseudo code to Horizontal sweep algorithm
  *
@@ -107,40 +108,52 @@ edge_list ** segmentationEdges;
 
 int main(int argc, char *argv[]){
 	face_list *faceList=NULL;
-	int listSize = input();
 	int zoom = 1;
 	vertex *guard=NULL;
+	input();
+	vertex **originalList=NULL;
+	int originalSize=0;
 	if(argc>1){
 		zoom = atoi(argv[1]);
 	}
-	if(argc>2){
-		guard = list[atoi(argv[2])];
+	if(argc>2 && strcmp(argv[2],"guard")==0){
+		guard = list[atoi(argv[3])];
+	}
+	if(argc>2 && strcmp(argv[2], "mvg")==0){
+		originalList=initVertexList(numberOfVertices);
+		memcpy(originalList, list, numberOfVertices);
+		originalSize=numberOfVertices;
 	}
 	// horizontalGrid();
 	// free(list);
 	// list=listWithSegmentation;
 	// numberOfVertices=numberOfVerticesWithSegmentation;
 	// listWithSegmentation=NULL;
-	printVertexList(list, numberOfVertices);
 	printDCEL(list,numberOfVertices, zoom);
-	horizontalPartition();
-	updateFaces(&faceList);
-	printVertexList(list, numberOfVertices);
-	printDCEL(list, numberOfVertices, zoom);
-	if(option){
+	if(option==0){
+		printf("Horizontal partition:\n");
+		horizontalPartition();
+		updateFaces(&faceList);
+		printVertexList(list, numberOfVertices);
+		printDCEL(list, numberOfVertices, zoom);
+	}
+	if(option==1){
+		printf("Grid partition\n");
+		horizontalPartition();
+		updateFaces(&faceList);
 		gridPartition(&faceList);
 		printVertexList(list, numberOfVertices);
 		printDCEL(list, numberOfVertices, zoom);
-		printf("Out EDGES -----------------------\n");
-		edge_list * listOutEdges = getAllOutEdges();
 		if(guard!=NULL){
+			edge_list * listOutEdges = getAllOutEdges();
 			face_list *visibleFaces = listVisibleFaces(guard,
 					faceList,
 					listOutEdges);
-			printf("All faces:\n");
-			printFaceList(faceList);
 			printf("Visible faces:\n");
 			printFaceList(visibleFaces);
+		}
+		if(originalSize>0){
+			//problema 3
 		}
 	}
 	free(list);
@@ -173,7 +186,6 @@ int input(){
 			listHole[j]=createVertex(vertexX, vertexY);
 		}
 		createPolygon(numberOfVerticesHole, listHole, in, out);
-		printVertexList(listHole, numberOfVerticesHole);
 		catVertexList(&list, numberOfVertices, &listHole, numberOfVerticesHole);
 		numberOfVertices+=numberOfVerticesHole;
 	}
@@ -532,13 +544,7 @@ void updateFaces(face_list **faceList){
 			tmp=malloc(sizeof(face));
 			addToFaceList(faceList, tmp);
 			tmp->rep=he;
-			printf("face:\n");
 			while(he->face!=tmp){
-				printf("(%d,%d)->(%d,%d)\n",
-						he->origin->x,
-						he->origin->y,
-						he->twin->origin->x,
-						he->twin->origin->y);
 				he->face=tmp;
 				rmFromList(&heList, he);
 				he=he->next;
@@ -557,11 +563,6 @@ edge_list * getAllOutEdges(){
 		do{
 			if(he->face == out){
 				addToList(&heList, he);
-				printf("(%d,%d)->(%d,%d)\n",
-						he->origin->x,
-						he->origin->y,
-						he->twin->origin->x,
-						he->twin->origin->y);
 			}
 			he=he->twin->next;
 		} while(he!=list[i]->rep);
@@ -824,15 +825,6 @@ int intersection(vertex *v1, vertex *v2, half_edge *he){
 	    o3 = orientation(he->origin, he->twin->origin, v1),
 	    o4 = orientation(he->origin, he->twin->origin, v2);
 	if((o1+o2)==0 && (o3+o4)==0 && o1!=0 && o3!=0){
-		printf("intersection (%d,%d)->(%d,%d) & (%d,%d)->(%d,%d)\n",
-				v1->x,
-				v1->y,
-				v2->x,
-				v2->y,
-				he->origin->x,
-				he->origin->y,
-				he->twin->origin->x,
-				he->twin->origin->y);
 		return 1;
 	}
 	else{
@@ -843,9 +835,6 @@ int intersection(vertex *v1, vertex *v2, half_edge *he){
 int visibleVertex(vertex *guard, vertex *test, edge_list *outEdges){
 	while(outEdges!=NULL){
 		if(intersection(guard, test, outEdges->item)){
-			printf("vertex not visible (%d,%d)\n", 
-					test->x, 
-					test->y);
 			return 0;
 		}
 		outEdges=outEdges->next;
@@ -876,3 +865,21 @@ face_list *listVisibleFaces(vertex *guard,
 	}
 	return visibleFaces;
 }
+
+void minimumVertexGuard(int k,
+		face_list *allFaces, 
+		vertex **vertexList,
+		int vertexListSize,
+		edge_list *outEdges){
+	int numberOfFaces=faceListSize(allFaces);
+	glp_prob *lp;
+	lp=glp_create_prob();
+	glp_set_obj_dir(lp, GLP_MIN);
+	glp_add_rows(lp, numberOfFaces);
+	for(int i=1; i<=numberOfFaces; i++){
+		glp_set_row_bnds(lp, i, GLP_LO, k, 0);
+	}
+	glp_add_cols(lp, vertexListSize);
+}
+
+

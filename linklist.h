@@ -60,6 +60,8 @@ void addToFaceList(face_list **head, face *item);
 
 void rmFromFaceList(face_list **head, face *item);
 
+int faceListSize(face_list *head);
+
 void printFaceList(face_list *head);
 
 #endif /* LINKLIST_H */
