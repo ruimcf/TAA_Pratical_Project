@@ -883,9 +883,9 @@ void minimumVertexGuard(int k,
 		int vertexListSize,
 		edge_list *outEdges){
 	int numberOfFaces=faceListSize(allFaces);
-	int f[vertexListSize*numberOfFaces+1], 
-	    v[vertexListSize*numberOfFaces+1];
-	double vis[vertexListSize*numberOfFaces+1];
+	int *f=malloc(sizeof(int)*(vertexListSize*numberOfFaces+1)), 
+	    *v=malloc(sizeof(int)*(vertexListSize*numberOfFaces+1));
+	double *vis=malloc(sizeof(double)*(vertexListSize*numberOfFaces+1));
 	glp_prob *lp;
 	lp=glp_create_prob();
 	glp_set_obj_dir(lp, GLP_MIN);
@@ -916,7 +916,7 @@ void minimumVertexGuard(int k,
 	printf("Number of Vertices needed: %f\n", glp_mip_obj_val(lp));
 	for(int i=1; i<=vertexListSize;i++){
 		if(glp_mip_col_val(lp, i)>0.0){
-			printf("(%d,%d)", 
+			printf("(%d,%d)\n", 
 					vertexList[i-1]->x,
 					vertexList[i-1]->y);
 		}
