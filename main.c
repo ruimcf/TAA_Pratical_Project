@@ -658,7 +658,7 @@ void traceLeft(vertex *v, edge_list *edgeList){
 		vertex *newVertex=createVertex(destHedge->origin->x, v->y);
 		insertVertexKeep(newVertex, destHedge);
 		insertEdge(v, newVertex, in);
-		changeVertexListSize(&list, numberOfVertices+1);
+		changeVertexListSize(&list, numberOfVertices+1, numberOfVertices);
 		list[numberOfVertices]=newVertex;
 		numberOfVertices++;
 		traceLeft(newVertex, edgeList);
@@ -690,7 +690,7 @@ int traceRight(vertex *v, edge_list *edgeList){
 		vertex *newVertex=createVertex(destHedge->origin->x, v->y);
 		insertVertexKeep(newVertex, destHedge);
 		insertEdge(v, newVertex, in);
-		changeVertexListSize(&list, numberOfVertices+1);
+		changeVertexListSize(&list, numberOfVertices+1, numberOfVertices);
 		list[numberOfVertices]=newVertex;
 		numberOfVertices++;
 		counter+= traceRight(newVertex, edgeList);
@@ -718,7 +718,7 @@ int traceUp(vertex *v, edge_list *edgeList, face_list **faceList){
 		vertex *newVertex=createVertex(v->x, destHedge->origin->y);
 		insertVertexKeep(newVertex, destHedge);
 		newFace = insertEdgeUpdateFace(v, newVertex, f);
-		changeVertexListSize(&list, numberOfVertices+1);
+		changeVertexListSize(&list, numberOfVertices+1, numberOfVertices);
 		list[numberOfVertices]=newVertex;
 		numberOfVertices++;
 		counter+= traceUp(newVertex, edgeList, faceList);
@@ -745,7 +745,7 @@ void traceDown(vertex *v, edge_list *edgeList, face_list **faceList){
 		vertex *newVertex=createVertex(v->x, destHedge->origin->y);
 		insertVertexKeep(newVertex, destHedge);
 		newFace = insertEdgeUpdateFace(v, newVertex, f);
-		changeVertexListSize(&list, numberOfVertices+1);
+		changeVertexListSize(&list, numberOfVertices+1, numberOfVertices);
 		list[numberOfVertices]=newVertex;
 		numberOfVertices++;
 		traceDown(newVertex, edgeList, faceList);

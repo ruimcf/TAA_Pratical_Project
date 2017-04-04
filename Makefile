@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-std=c99 -g
+CFLAGS=-std=c99 -g -lm
 
 all: example
 
@@ -10,7 +10,7 @@ main.o: main.c
 	$(CC) -c main.c -I. $(CFLAGS)
 
 dcel.o: dcel.c
-	$(CC) -c dcel.c -I. $(CFLAGS)
+	$(CC) -c dcel.c -I.  $(CFLAGS)
 
 linklist.o: linklist.c
 	$(CC) -c linklist.c -I. $(CFLAGS)

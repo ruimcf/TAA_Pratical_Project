@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 half_edge * getUpEdge(vertex * vertex1){
 	half_edge *tmp = vertex1->rep;
@@ -66,17 +67,23 @@ vertex *createVertex(int x, int y){
 
 vertex **initVertexList(int size){
 	vertex **list;
-	list=malloc(sizeof(vertex *) * size);
+	int newSize = pow(2.0, floor(log2(size))+1);
+	list=malloc(sizeof(vertex *) * newSize);
 	return list;
 }
 
-void changeVertexListSize(vertex ***list, int newSize){
-	*list = realloc(*list, sizeof(vertex *) * newSize);
+void changeVertexListSize(vertex ***list, int newSize, int oldSize){
+	double oldLog = floor(log2(oldSize))+1,
+	       newLog = floor(log2(newSize))+1;
+	if(newLog!=oldLog){
+		int size = (int) pow(2.0, newLog);
+		*list = realloc(*list, sizeof(vertex *) * size);
+	}
 	return;
 }
 
 void catVertexList(vertex ***dest, int destSize, vertex ***src, int srcSize){
-	changeVertexListSize(dest, destSize+srcSize);
+	changeVertexListSize(dest, destSize+srcSize, destSize);
 	memcpy(*dest+destSize, *src, srcSize*sizeof(vertex*));
 	free(*src);
 	return;
